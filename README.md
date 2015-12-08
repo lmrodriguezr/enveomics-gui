@@ -4,7 +4,7 @@ Enveomics GUI
 Graphical User Interface for [Enveomics][1].
 
 What can I do with this?
-------------------------
+========================
 You can run any of the many scripts in [Enveomics][1] without ever opening
 the terminal (you don't even need to know what the terminal is!). The scripts
 in [Enveomics][1] are specialized tasks for genomics and metagenomics analyses.
@@ -15,7 +15,7 @@ to split sequence files ([FastQ.split.pl][6] and [FastA.split.pl][7]). And there
 is much much more!
 
 Features
---------
+========
 * Executes scripts easily, no programming or even terminal use experience
   needed.
 * Reports the exact command executed, so you can reproduce, automate, and report
@@ -26,7 +26,7 @@ Features
 * All the magic of [Shoes][8].
 
 Show me, please!
-----------------
+================
 My pleasure. Here's the home window:
 ![home](docs/img/Home.png)
 
@@ -41,18 +41,18 @@ And the result window:
 ![aai result](docs/img/aai-result.png)
 
 Coming soon
------------
+===========
 * Support for `enveomics.R`.
 * Input multiple files for scripts supporting them.
 
 Credits
--------
+=======
 The Enveomics GUI was developed on [Shoes 4][8] by Luis M. Rodriguez-R. For
 additional information on the scripts collection, please refer to
 [Enveomics][1]. Icons by [Yu Luck from the Noun Project][9].
 
 License
--------
+=======
 Enveomics GUI and the [Enveomics collection][1] are licensed under the terms of
 [The Artistic License 2.0](LICENSE), except when otherwise noted.
 

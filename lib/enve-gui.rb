@@ -2,7 +2,7 @@
 # @package enveomics
 # @author  Luis M. Rodriguez-R <lmrodriguezr at gmail dot com>
 # @license artistic license 2.0
-# @update  Dec-03-2015
+# @update  Dec-08-2015
 #
 
 require "tempfile"
@@ -42,7 +42,7 @@ class EnveGUI < Shoes
    # =====================[ View : Windows ]
    # Main window
    def home
-      header
+      header "/"
       stack(margin:[40,0,40,0]) do
 	 title "Welcome to the Enveomics collection!", align:"center"
 	 $home_info = para "Retrieving enveomics...", align:"center"
@@ -69,7 +69,7 @@ class EnveGUI < Shoes
    
    # Index of all tasks
    def index
-      header
+      header "/index"
       stack(margin:[40,0,40,0]) do
 	 stack do
 	    $collection.each_category do |cat_name, cat_set|
@@ -103,7 +103,7 @@ class EnveGUI < Shoes
 
    # About enveomics
    def about
-      header
+      header "/about"
       stack(margin:[40,0,40,0]) do
 	 title "About the enveomics collection", align:"center"
 	 para ""
@@ -210,7 +210,7 @@ class EnveGUI < Shoes
    end
 
    # =====================[ View : Elements ]
-   def header
+   def header(in_page="")
       self.scroll_top = 0
       background pattern(img_path("bg1.png"))
       #@the_background = background "#B2E5F4" .. "#F1E1F4"
@@ -239,6 +239,7 @@ class EnveGUI < Shoes
 	    ]
 	    menu.each do |i|
 	       stack(width:50) do
+		  background rgb(158,209,224) if i[1]==in_page
 		  image img_path(i[2]),
 		     width:50, height:50, margin:2
 		  inscription i[0], align:"center"
