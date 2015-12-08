@@ -10,6 +10,7 @@ class EnveOption
       out_dir: {name: "Output directory"},
       select: {name: "Select"},
       string: {name: "String"},
+      character: {name: "Character"},
       integer: {name: "Integer"},
       float: {name: "Floating-point number"}
    }
@@ -27,10 +28,10 @@ class EnveOption
       end
       @hash[:arg] = @hash[:arg].nil? ? :nil : @hash[:arg].to_sym
       @hash[:hidden] = true if @hash[:arg]==:task
+      raise "Unknown argument type: #{@hash[:arg]}." if
+	 @@TYPE[ @hash[:arg].to_sym ].nil?
       if @hash[:name].nil?
 	 if @hash[:opt].nil?
-	    raise "Unknown argument type: #{@hash[:arg]}." if
-	       @@TYPE[ @hash[:arg].to_sym ].nil?
 	    @hash[:name] = @@TYPE[ @hash[:arg].to_sym ][:name]
 	 else
 	    @hash[:name] = hash[:opt].sub(/^-+/,"").gsub(/[-_]/," ").capitalize
@@ -58,8 +59,8 @@ class EnveOption
       hash[:arg].to_sym
    end
    def values
-      raise "Options of 'select' type must contain a 'values' array: #{name}." unless
-	 arg==:select and hash[:values].is_a? Array
+      raise "Options of 'select' type must contain a 'values' array: " +
+	 "#{name}." unless arg==:select and hash[:values].is_a? Array
       hash[:values]
    end
    def default

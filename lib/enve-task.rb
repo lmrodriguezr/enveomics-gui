@@ -16,6 +16,9 @@ class EnveTask
       end
       hash[:description]
    end
+   def help_arg
+      hash[:help_arg]
+   end
    def options
       @options ||= hash[:options].map{ |o| EnveOption.new(o) }
       @options
@@ -85,6 +88,9 @@ class EnveTask
 		  cmd << o.opt.shellescape unless o.opt.nil?
 		  cmd << values[i].to_s.shellescape
 	       # Strings
+	       when :character
+		  cmd << o.opt.shellescape unless o.opt.nil?
+		  cmd << values[i].to_s[0].shellescape unless o.opt.nil?
 	       else
 		  cmd << o.opt.shellescape unless o.opt.nil?
 		  cmd << values[i].shellescape
@@ -120,5 +126,8 @@ class EnveRequires
    def description
       @hash[:description] ||= hash[:test]
       hash[:description]
+   end
+   def test
+      hash[:test]
    end
 end
