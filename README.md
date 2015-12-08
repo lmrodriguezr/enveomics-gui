@@ -42,8 +42,19 @@ And the result window:
 
 Coming soon
 -----------
-* Support for enveomics.R.
+* Support for `enveomics.R`.
 * Input multiple files for scripts supporting them.
+
+Credits
+-------
+The Enveomics GUI was developed on [Shoes 4][8] by Luis M. Rodriguez-R. For
+additional information on the scripts collection, please refer to
+[Enveomics][1]. Icons by [Yu Luck from the Noun Project][9].
+
+License
+-------
+Enveomics GUI and the [Enveomics collection][1] are licensed under the terms of
+[The Artistic License 2.0](LICENSE), except when otherwise noted.
 
 
 [1]: https://github.com/lmrodriguezr/enveomics  "Enveomics collection"
@@ -54,3 +65,4 @@ Coming soon
 [6]: http://enveomics.blogspot.com/2012/11/fastasplitpl.html
 [7]: http://enveomics.blogspot.com/2013/09/fastqsplitpl.html
 [8]: https://github.com/shoes/shoes4 "Shoes 4"
+[9]: https://thenounproject.com/yuluck

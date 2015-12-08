@@ -9,6 +9,8 @@ To Do
 * :see_also in tasks.
 * "Soft :requires" (:suggests ?) for optional requirements like the
   rest-client gem in aai.rb/ani.rb.
+* Check for available updates (instead of relying on user checking).
+  Perhaps with the github API?
 
 History
 =======
