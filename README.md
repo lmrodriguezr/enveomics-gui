@@ -70,7 +70,7 @@ Mac OS X
 2. Open it. You can also drag it to you `Applications` folder first if you want
    easy access at all times.
 
-**Caveat:** It has come to our attention (#1) that the bundled app has low
+**Caveat:** It has [come to our attention][10] that the bundled app has low
 resolution in OS X. We're working on solving this issue, but in the meantime you
 can get around it by downloading [enveomics.jar][jar] instead, and running this
 in the terminal: `java -jar -XstartOnFirstThread enveomics.jar`, changing the
@@ -119,3 +119,4 @@ of [The Artistic License 2.0](LICENSE), except when otherwise noted.
 [7]: https://www.ruby-lang.org/en/documentation/installation/
 [8]: https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download
 [9]: http://openjdk.java.net/
+[10]: https://github.com/lmrodriguezr/enveomics-gui/issues/1
