@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="EnveomicsGUI" default="default" basedir=".">        
+   <taskdef name="bundleapp"
+	    classname="com.oracle.appbundler.AppBundlerTask"   
+	    classpath="lib/appbundler-1.0.jar" />
+   <target name="enveomics">
+      <bundleapp outputdirectory="."
+	       name="enveomics"
+	       displayname="Enveomics GUI"
+	       identifier="edu.gatech.enve-omics.enveomics"
+	       mainclassname="JarMain">
+	 <classpath file="enveomics.jar" />
+	 <option value="-XstartOnFirstThread"/>
+      </bundleapp>
+   </target>
+</project>

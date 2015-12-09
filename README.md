@@ -50,8 +50,8 @@ Notably, you'll need [Perl][11] to execute any of the tasks ending in `.pl` and
 ending in `.bash` will require a GNU Bash port in Windows machines, and some
 tasks have additional requirements that are unlikely to ever work in Windows.
 That said, we're trying to extend our support as wide as possible, so please
-[report any issues][13]. Finally, some tasks might depend on external software
-like [BLAST][14].
+[report any issues][issues]. Finally, some tasks might depend on external
+software like [BLAST][14].
 
 Linux or BSD
 ------------
@@ -59,22 +59,28 @@ Linux or BSD
 2. Make sure you have [Java][10] or another implementation like [OpenJDK][15],
    and use it to open `enveomics.jar`. In most modern Linux distros you can
    simply right-click on the file and select to open with JVM or OpenJDK, or
-   even just double-click the file. If it doesn't work please [let us know][13],
-   and execute this in the terminal: `java -jar enveomics.jar`, changing the
-   path of `enveomics.jar` to wherever you downloaded it.
+   even just double-click the file. If it doesn't work please
+   [let us know][issues], and execute this in the terminal:
+   `java -jar enveomics.jar`, changing the path of `enveomics.jar` to wherever
+   you downloaded it.
 
 Mac OS X
 --------
-We're currently working on packaging an OS X app, but in the meantime you can:
-1. Download [enveomics.jar][jar]
-2. Execute this in the terminal: `java -jar -XstartOnFirstThread enveomics.jar`,
-   changing the path of `enveomics.jar` to wherever you downloaded it.
+1. Download [enveomics.app][app] and unzip it.
+2. Open it. You can also drag it to you `Applications` folder first if you want
+   easy access at all times.
+
+**Caveat:** It has come to our attention (#1) that the bundled app has low
+resolution in OS X. We're working on solving this issue, but in the meantime you
+can get around it by downloading [enveomics.jar][jar] instead, and running this
+in the terminal: `java -jar -XstartOnFirstThread enveomics.jar`, changing the
+path of `enveomics.jar` to wherever you downloaded it.
 
 Windows
 -------
 Our current pre-release is yet to be tested in Windows. If you're not affraid of
-finding bugs, just follow the same instructions above for Linux or BSD. And
-whatever happens, please [let us know][13].
+bugs, just follow the same instructions above for Linux or BSD. And whatever
+happens, please [let us know][issues].
 
 Coming soon
 ===========
@@ -94,6 +100,9 @@ Enveomics GUI and the [Enveomics collection][1] are licensed under the terms of
 [The Artistic License 2.0](LICENSE), except when otherwise noted.
 
 
+[issues]: https://github.com/lmrodriguezr/enveomics-gui/issues
+[jar]: https://github.com/lmrodriguezr/enveomics-gui/releases/download/v0.1.0-alpha2/enveomics.jar
+[app]: https://github.com/lmrodriguezr/enveomics-gui/releases/download/v0.1.0-alpha2/enveomics.app.zip
 [1]: https://github.com/lmrodriguezr/enveomics  "Enveomics collection"
 [2]: http://enveomics.blogspot.com/2013/10/anirb.html
 [3]: http://enveomics.blogspot.com/2013/10/aairb.html
@@ -106,7 +115,5 @@ Enveomics GUI and the [Enveomics collection][1] are licensed under the terms of
 [10]: https://www.java.com/en/download/
 [11]: https://www.perl.org/get.html
 [12]: https://www.ruby-lang.org/en/documentation/installation/
-[13]: https://github.com/lmrodriguezr/enveomics-gui/issues
 [14]: https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download
 [15]: http://openjdk.java.net/
-[jar]: https://github.com/lmrodriguezr/enveomics-gui/releases/download/v0.1.0-alpha1/enveomics.jar

@@ -37,3 +37,7 @@ build/
 # Vim
 *.swp
 */*.swp
+
+# Dist
+/dist/enveomics.*
+/dist/lib/*.*
