@@ -55,7 +55,7 @@ like [BLAST][14].
 
 Linux or BSD
 ------------
-1. Download `enveomics.jar`.
+1. Download [enveomics.jar][jar].
 2. Make sure you have [Java][10] or another implementation like [OpenJDK][15],
    and use it to open `enveomics.jar`. In most modern Linux distros you can
    simply right-click on the file and select to open with JVM or OpenJDK, or
@@ -66,7 +66,7 @@ Linux or BSD
 Mac OS X
 --------
 We're currently working on packaging an OS X app, but in the meantime you can:
-1. Download `enveomics.jar`
+1. Download [enveomics.jar][jar]
 2. Execute this in the terminal: `java -jar -XstartOnFirstThread enveomics.jar`,
    changing the path of `enveomics.jar` to wherever you downloaded it.
 
@@ -109,3 +109,4 @@ Enveomics GUI and the [Enveomics collection][1] are licensed under the terms of
 [13]: https://github.com/lmrodriguezr/enveomics-gui/issues
 [14]: https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download
 [15]: http://openjdk.java.net/
+[jar]: https://github.com/lmrodriguezr/enveomics-gui/releases/download/v0.1.0-alpha1/enveomics.jar
