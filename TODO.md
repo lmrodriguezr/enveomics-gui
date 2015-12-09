@@ -11,6 +11,7 @@ To Do
   rest-client gem in aai.rb/ani.rb.
 * Check for available updates (instead of relying on user checking).
   Perhaps with the github API?
+* Auto-add :requires based on the language (ruby, perl, bash, etc).
 
 History
 =======
