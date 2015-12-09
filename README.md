@@ -101,8 +101,8 @@ Enveomics GUI and the [Enveomics collection][1] are licensed under the terms of
 
 
 [issues]: https://github.com/lmrodriguezr/enveomics-gui/issues
-[jar]: https://github.com/lmrodriguezr/enveomics-gui/releases/download/v0.1.0-alpha2/enveomics.jar
-[app]: https://github.com/lmrodriguezr/enveomics-gui/releases/download/v0.1.0-alpha2/enveomics.app.zip
+[jar]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.jar
+[app]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.app.zip
 [1]: https://github.com/lmrodriguezr/enveomics  "Enveomics collection"
 [2]: http://enveomics.blogspot.com/2013/10/anirb.html
 [3]: http://enveomics.blogspot.com/2013/10/aairb.html

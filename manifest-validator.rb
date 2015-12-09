@@ -20,12 +20,12 @@ t_names = c.tasks.map{ |t| t.task }
 categorized = c.hash[:categories].values.map{ |sc| sc.values }.flatten.uniq
 orphan = categorized - t_names
 if orphan.any?
-   $stderr.puts "> Uncategorized scripts (#{orphan.count}):"
+   $stderr.puts "> Categorized but undeclared scripts (#{orphan.count}):"
    orphan.each{ |o| $stderr.puts "  o #{o}" }
 end
 undec = t_names - categorized
 if undec.any?
-   $stderr.puts "> Scripts categorized but undeclared (#{undec.count}):"
+   $stderr.puts "> Uncategorized scripts (#{undec.count}):"
    undec.each{ |o| $stderr.puts "  o #{o}" }
 end
 
