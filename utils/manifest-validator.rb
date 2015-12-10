@@ -3,10 +3,10 @@
 # @package enve-omics
 # @author  Luis M. Rodriguez-R <lmrodriguezr at gmail dot com>
 # @license artistic license 2.0
-# @update  Dec-08-2015
+# @update  Dec-10-2015
 #
 
-$:.push File.expand_path("lib", File.dirname(__FILE__))
+$:.push File.expand_path("../lib", File.dirname(__FILE__))
 require "enve-collection"
 manif = ARGV.shift
 
