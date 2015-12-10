@@ -32,7 +32,7 @@ end
 # Evaluate individual scripts
 known_t_fields = [:task, :description, :help_arg, :options, :requires]
 known_o_fields = [:name, :description, :note, :opt, :arg, :mandatory, :values,
-   :hidden, :as_is, :default, :multiple_sep]
+   :hidden, :as_is, :default, :multiple_sep, :source_url]
 empty_tasks = []
 c.tasks.each do |task|
    if task.description.empty? and task.options.empty? and task.help_arg.nil?
@@ -45,6 +45,9 @@ c.tasks.each do |task|
    issues << "Empty description." if task.description.empty?
    issues << "Empty options." if task.options.empty?
    issues << "No help command." if task.hash[:help_arg].nil?
+   issues << "Description doesn't end in period: " +
+      task.description if not task.description.empty? and
+      not %w(. ? !).include?(task.description[-1])
    bad_req = (task.requires.map do |r|
       (r.hash[:description].nil? or r.hash[:description].empty?) ?
       "Requirement wihtout description: #{r.test}." :
@@ -59,6 +62,10 @@ c.tasks.each do |task|
       issues << "Select option without values: #{opt.name}." if
 	 opt.arg==:select and
 	 (opt.hash[:values].nil? or opt.hash[:values].empty?)
+      issues << "Select option's default is not in values: #{opt.name}." if
+	 opt.arg==:select and not opt.default.nil? and
+	 not opt.hash[:values].nil? and
+	 not opt.hash[:values].include?(opt.default)
       issues << "Check option with unused default: #{opt.name}." if
 	 opt.arg==:nil and not opt.default.nil?
       issues << "Hidden option with unused default: #{opt.name}." if
@@ -69,7 +76,7 @@ c.tasks.each do |task|
 	 opt.arg==:nil and (opt.opt.nil? or opt.opt.empty?)
       issues << "Option description doesn't end in period: #{opt.name}: " +
 	 opt.description if not opt.hidden? and not opt.description.empty? and
-	 opt.description[-1] != "."
+	 not %w(. ? !).include?(opt.description[-1])
    end
 
    if issues.any?
