@@ -85,6 +85,11 @@ Our current pre-release is yet to be tested in Windows. If you're not affraid of
 bugs, just follow the same instructions above for Linux or BSD. And whatever
 happens, please [let us know][issues].
 
+From the source
+---------------
+If you want to play with the code of Enveomics GUI, you can open it directly
+from the source. Check out [INSTALL-HARD.md](INSTALL-HARD.md) to learn how.
+
 Coming soon
 ===========
 * Support for `enveomics.R`.
