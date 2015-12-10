@@ -27,16 +27,20 @@ Features
 Show me, please!
 ================
 My pleasure. Here's the home window:
+
 ![home](docs/img/Home.png)
 
 Here, the complete index of tasks:
+
 ![all tasks](docs/img/AllTasks.png)
 
 This is us preparing to calculate the Average Amino acid Identity (AAI) between
 two genomes:
+
 ![aai form](docs/img/aai-form.png)
 
 And the result window:
+
 ![aai result](docs/img/aai-result.png)
 
 Install
@@ -66,9 +70,8 @@ Linux or BSD
 
 Mac OS X
 --------
-1. Download [enveomics.app][app] and unzip it.
-2. Open it. You can also drag it to you `Applications` folder first if you want
-   easy access at all times.
+1. Download and open [enveomics.dmg][dmg].
+2. Drag `enveomics.app` to the `Applications` folder.
 
 **Caveat:** It has [come to our attention][10] that the bundled app has low
 resolution in OS X. We're working on solving this issue, but in the meantime you
@@ -103,7 +106,7 @@ of [The Artistic License 2.0](LICENSE), except when otherwise noted.
 
 [issues]: https://github.com/lmrodriguezr/enveomics-gui/issues
 [jar]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.jar
-[app]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.app.zip
+[dmg]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.dmg
 [lrr]: http://lmrodriguezr.github.io/
 [enve]: https://github.com/lmrodriguezr/enveomics  "Enveomics collection"
 [anirb]: http://enveomics.blogspot.com/2013/10/anirb.html
