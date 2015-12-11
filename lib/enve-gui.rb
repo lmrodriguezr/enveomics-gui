@@ -2,7 +2,6 @@
 # @package enveomics
 # @author  Luis M. Rodriguez-R <lmrodriguezr at gmail dot com>
 # @license artistic license 2.0
-# @update  Dec-08-2015
 #
 
 require "tempfile"
@@ -183,6 +182,7 @@ class EnveGUI < Shoes
 		     @opt_elem[opt_i] = edit_line opt.default
 	       end
 	       inscription opt.note if opt.note
+	       opt.source_urls.each{ |url| para link(url){ open_url(url) } }
 	    end # stack (option)
 	    para "", margin:10
 	 end # each option

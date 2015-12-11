@@ -66,6 +66,12 @@ class EnveOption
    def default
       hash[:default]
    end
+   def source_urls
+      @hash[:source_url] ||= []
+      @hash[:source_url] = [hash[:source_url]] unless
+	 hash[:source_url].is_a? Array
+      hash[:source_url]
+   end
    def hidden?
       !!hash[:hidden]
    end
