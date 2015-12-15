@@ -130,19 +130,26 @@ class EnveGUI < Shoes
 	 @t = $collection.task(task)
 	 title @t.task
 	 para @t.description
-	 unless @t.ready?
+	 unless @t.warn.empty? and @t.ready?
 	    para ""
 	    stack(margin:[50,0,50,0]) do
 	       background "#fdd"..."#f99"
 	       border "#300"
 	       stack(margin:[20,0,20,0]) do
 		  para ""
-		  para strong("This script cannot be used due to unmet" +
-		     " requirements:")
-		  @t.unmet.each do |r|
-		     para r.description, margin:[10,0,10,0]
+		  if not @t.ready?
+		     para strong("This script cannot be used due to unmet" +
+			" requirements:")
+		     @t.unmet.each do |r|
+			para r.description, margin:[10,0,10,0]
+		     end
+		     para ""
 		  end
-		  para ""
+		  unless @t.warn.empty?
+		     para strong("Warning")
+		     para @t.warn, margin:[10,0,10,0]
+		     para ""
+		  end
 	       end
 	    end
 	 end
@@ -213,18 +220,6 @@ class EnveGUI < Shoes
    def header(in_page="")
       self.scroll_top = 0
       background pattern(img_path("bg1.png"))
-      #@the_background = background "#B2E5F4" .. "#F1E1F4"
-      #@the_background_seeds = [250,250,250]
-      #animate(4) do |frame|
-	 #-- Method 1: Smooth change
-	 #smidge = (16*(0.5+Math.sin(frame.to_f/10)/2)).to_i
-	 #@the_background.fill = rgb(239+smidge, 255-smidge, 239+smidge)
-	 #-- Method 2: Beware the headache!
-	 #@the_background_seeds.map! do |v|
-	 #   [[255,v-2+rand(5)].min,128].max
-	 #end
-	 #@the_background.fill = rgb(*@the_background_seeds)
-      #end
       stack do
 	 background rgb(178,229,244,1.0)
 	 flow(width:1.0) do

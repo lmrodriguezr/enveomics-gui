@@ -30,7 +30,7 @@ if undec.any?
 end
 
 # Evaluate individual scripts
-known_t_fields = [:task, :description, :help_arg, :options, :requires]
+known_t_fields = [:task, :description, :help_arg, :options, :requires, :warn]
 known_o_fields = [:name, :description, :note, :opt, :arg, :mandatory, :values,
    :hidden, :as_is, :default, :multiple_sep, :source_url]
 empty_tasks = []
@@ -48,6 +48,9 @@ c.tasks.each do |task|
    issues << "Description doesn't end in period: " +
       task.description if not task.description.empty? and
       not %w(. ? !).include?(task.description[-1])
+   issues << "Warnings don't end in period: " +
+      task.warn if not task.warn.empty? and
+      not %w(. ? !).include?(task.warn[-1])
    bad_req = (task.requires.map do |r|
       (r.hash[:description].nil? or r.hash[:description].empty?) ?
       "Requirement wihtout description: #{r.test}." :

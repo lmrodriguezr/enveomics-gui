@@ -57,6 +57,11 @@ class EnveTask
    def reserved_stdout?
       !!@reserved_stdout
    end
+   def warn
+      @hash[:warn] ||= ""
+      @hash[:warn] = hash[:warn].join(" ") if hash[:warn].is_a? Array
+      hash[:warn]
+   end
    def build_cmd(values, logfile)
       scripts = File.expand_path("enveomics-master/Scripts",EnveCollection.home)
       task_cmd = []
