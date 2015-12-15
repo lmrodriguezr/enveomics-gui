@@ -153,6 +153,10 @@ class EnveGUI < Shoes
 	       end
 	    end
 	 end
+	 unless @t.see_also.empty?
+	    para "See also: ", *@t.see_also.map{ |s|
+		  [link(s){visit "/script-#{s}" }, " "] }.flatten
+	 end
 	 para "", margin:10
 	 @opt_value = []
 	 @opt_elem  = []

@@ -30,7 +30,8 @@ if undec.any?
 end
 
 # Evaluate individual scripts
-known_t_fields = [:task, :description, :help_arg, :options, :requires, :warn]
+known_t_fields = [:task, :description, :help_arg, :options, :requires, :warn,
+   :see_also]
 known_o_fields = [:name, :description, :note, :opt, :arg, :mandatory, :values,
    :hidden, :as_is, :default, :multiple_sep, :source_url]
 empty_tasks = []
@@ -58,6 +59,10 @@ c.tasks.each do |task|
       "Requirement without test: #{r.description}" : nil
    end.compact)
    issues += bad_req if bad_req.any?
+   task.see_also.each do |s|
+      issues << "See-also linking to unexisting task: #{s}." if
+	 c.task(s).nil?
+   end
    task.options.each do |opt|
       extra_f = opt.hash.keys - known_o_fields
       issues << "Unused fields in option: #{opt.name}: " +

@@ -62,6 +62,11 @@ class EnveTask
       @hash[:warn] = hash[:warn].join(" ") if hash[:warn].is_a? Array
       hash[:warn]
    end
+   def see_also
+      @hash[:see_also] ||= []
+      @hash[:see_also] = [hash[:see_also]] unless hash[:see_also].is_a? Array
+      hash[:see_also]
+   end
    def build_cmd(values, logfile)
       scripts = File.expand_path("enveomics-master/Scripts",EnveCollection.home)
       task_cmd = []
