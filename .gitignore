@@ -40,4 +40,5 @@ build/
 
 # Dist
 /dist/enveomics.*
-/dist/lib/*.*
+/dist/lib/*
+/dist/bin/*

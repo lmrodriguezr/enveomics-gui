@@ -68,7 +68,7 @@ class EnveTask
       hash[:see_also]
    end
    def build_cmd(values, logfile)
-      scripts = File.expand_path("enveomics-master/Scripts",EnveCollection.home)
+      scripts = File.expand_path("enveomics-master/Scripts", EnveCollection.home)
       task_cmd = []
       task_cmd << $EXT_RUBY if task =~ /\.rb$/
       task_cmd << File.expand_path(task, scripts).shellescape

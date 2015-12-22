@@ -1,5 +1,9 @@
 
 BUNDLER_URL="https://java.net/downloads/appbundler/appbundler-1.0.jar"
+BLAST_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST
+BLAST_MAC_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-universal-macosx.tar.gz"
+BLAST_LINUX_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-x64-linux.tar.gz"
+BLAST_WINDOWS_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-x64-win64.tar.gz"
 
 all: enveomics.jar enveomics.dmg enveomics.exe
 
@@ -20,10 +24,23 @@ install-deps: /usr/local/bin/brew /Library/TeX/texbin/pdflatex
 	      LaTeX https://latex-project.org/ftp.html; \
 	fi
 
+lib/shoes4:
+	cd lib && git clone https://github.com/shoes/shoes4.git
+
+../enveomics.rb:
+	@echo Please restore all the contents from
+	@echo https://github.com/lmrodriguezr/enveomics-git
+
 #-- Packages
-enveomics.jar:
-	shoes-swt -p swt:jar ../enveomics.rb
-	mv ../pkg/enveomics.jar .
+enveomics.jar: ../enveomics.rb bin lib/shoes4
+	mkdir jar-pkg
+	cp ../enveomics.rb jar-pkg/
+	cp -r ../lib jar-pkg/
+	cp -r ../img jar-pkg/
+	cp -r bin jar-pkg/
+	cd lib/shoes4 && bin/shoes-swt -p swt:jar ../../jar-pkg/enveomics.rb
+	mv jar-pkg/pkg/enveomics.jar .
+	rm -r jar-pkg
 
 enveomics.app: enveomics.jar lib/appbundler-1.0.jar
 	ant enveomics
@@ -64,8 +81,38 @@ lib/%.pdf: ../%.md lib
 	pandoc -o $@ -f markdown_github $<
 	rm docs
 
+bin: bin/mac/blastp bin/linux/blastp bin/windows/blastp.exe
+	
+bin/mac/blastp: lib/ncbi-blast-macosx.tar.gz
+	-mkdir -p bin/mac
+	tar zxvf $<
+	mv ncbi-blast-*/bin/* bin/mac/
+	rm -r ncbi-blast-*
+
+bin/linux/blastp: lib/ncbi-blast-linux.tar.gz
+	-mkdir -p bin/linux
+	tar zxvf $<
+	mv ncbi-blast-*/bin/* bin/linux/
+	rm -r ncbi-blast-*
+
+bin/windows/blastp.exe: lib/ncbi-blast-windows.tar.gz
+	-mkdir -p bin/windows
+	tar zxvf $<
+	mv ncbi-blast-*/bin/* bin/windows/
+	rm -r ncbi-blast-*
+
+lib/ncbi-blast-macosx.tar.gz:
+	curl $(BLAST_MAC_URL) > $@
+	
+lib/ncbi-blast-linux.tar.gz:
+	curl $(BLAST_LINUX_URL) > $@
+	
+lib/ncbi-blast-windows.tar.gz:
+	curl $(BLAST_WINDOWS_URL) > $@
+
 #-- Clean up
 clean:
 	rm -rf enveomics.*
-	rm -rf lib/*.*
+	rm -rf lib/*
+	rm -rf bin
 

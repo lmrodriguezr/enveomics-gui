@@ -15,6 +15,8 @@ begin
    $stderr.puts "Picking an external ruby."
    $EXT_RUBY = "ruby"
    $EXT_RUBY = "jruby" unless system("#{$EXT_RUBY} -e ''")
+   $stderr.puts "Setting environment."
+   EnveCollection.setup_bins
    $stderr.puts "Wearing shoes."
    EnveGUI.init
 rescue => err

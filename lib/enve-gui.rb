@@ -20,8 +20,7 @@ class EnveGUI < Shoes
    url "/update", :update
    url "/subcat-(.*--.*)", :subcat
    url "/script-(.*)", :script
-   $enve_path  = File.expand_path("../../Scripts", File.dirname(__FILE__))
-   $img_path   = File.expand_path("../img", File.dirname(__FILE__))
+   $img_path   = File.expand_path("../../img", __FILE__)
    $enve_jobs  = {}
    $citation   = [
       "Rodriguez-R and Konstantinidis. In preparation. The enveomics ",

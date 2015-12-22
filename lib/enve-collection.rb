@@ -18,6 +18,21 @@ class EnveCollection
       end
       @@HOME
    end
+   def self.setup_bins
+      # Only for packaged apps
+      return if __FILE__ !~ /\.jar!\//
+      # Copy bins
+      FileUtils.cp_r(File.expand_path("../../bin", __FILE__), home)
+      FileUtils.chmod("u=rwx,go=rx", Dir[File.expand_path("bin/*/*", home)]) 
+      # Tell the system
+      if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
+	 ENV["PATH"] = "#{File.expand_path("bin/windows", home)}:#{ENV["PATH"]}"
+      elsif RbConfig::CONFIG['host_os'] =~ /darwin/
+	 ENV["PATH"] = "#{File.expand_path("bin/mac", home)}:#{ENV["PATH"]}"
+      elsif RbConfig::CONFIG['host_os'] =~ /linux|bsd/
+	 ENV["PATH"] = "#{File.expand_path("bin/linux", home)}:#{ENV["PATH"]}"
+      end
+   end
    def self.manif
       manif = File.expand_path("enveomics-master/manifest.json", home)
       return manif if File.exist? manif
