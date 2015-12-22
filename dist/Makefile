@@ -4,6 +4,7 @@ BLAST_URL=ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST
 BLAST_MAC_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-universal-macosx.tar.gz"
 BLAST_LINUX_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-x64-linux.tar.gz"
 BLAST_WINDOWS_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-x64-win64.tar.gz"
+BLAST_INCLUDE=--include "*/bin/makeblastdb*" --include "*/bin/blast[pn]*" --include "*/bin/tblast[xn]*"
 
 all: enveomics.jar enveomics.dmg enveomics.exe
 
@@ -85,19 +86,19 @@ bin: bin/mac/blastp bin/linux/blastp bin/windows/blastp.exe
 	
 bin/mac/blastp: lib/ncbi-blast-macosx.tar.gz
 	-mkdir -p bin/mac
-	tar zxvf $<
+	tar $(BLAST_INCLUDE) -zxvf $<
 	mv ncbi-blast-*/bin/* bin/mac/
 	rm -r ncbi-blast-*
 
 bin/linux/blastp: lib/ncbi-blast-linux.tar.gz
 	-mkdir -p bin/linux
-	tar zxvf $<
+	tar $(BLAST_INCLUDE) -zxvf $<
 	mv ncbi-blast-*/bin/* bin/linux/
 	rm -r ncbi-blast-*
 
 bin/windows/blastp.exe: lib/ncbi-blast-windows.tar.gz
 	-mkdir -p bin/windows
-	tar zxvf $<
+	tar $(BLAST_INCLUDE) -zxvf $<
 	mv ncbi-blast-*/bin/* bin/windows/
 	rm -r ncbi-blast-*
 
