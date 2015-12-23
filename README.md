@@ -54,13 +54,12 @@ Notably, you'll need [Perl][6] to execute any of the tasks ending in `.pl` and
 ending in `.bash` will require a GNU Bash port in Windows machines, and some
 tasks have additional requirements that are unlikely to ever work in Windows.
 That said, we're trying to extend our support as wide as possible, so please
-[report any issues][issues]. Finally, some tasks might depend on external
-software like [BLAST][8].
+[report any issues][issues].
 
 Linux or BSD
 ------------
 1. Download [enveomics.jar][jar].
-2. Make sure you have [Java][5] or another implementation like [OpenJDK][9],
+2. Make sure you have [Java][5] or another implementation like [OpenJDK][8],
    and use it to open `enveomics.jar`. In most modern Linux distros you can
    simply right-click on the file and select to open with JVM or OpenJDK, or
    even just double-click the file. If it doesn't work please
@@ -72,12 +71,6 @@ Mac OS X
 --------
 1. Download and open [enveomics.dmg][dmg].
 2. Drag `enveomics.app` to the `Applications` folder.
-
-**Caveat:** It has [come to our attention][10] that the bundled app has low
-resolution in OS X. We're working on solving this issue, but in the meantime you
-can get around it by downloading [enveomics.jar][jar] instead, and running this
-in the terminal: `java -jar -XstartOnFirstThread enveomics.jar`, changing the
-path of `enveomics.jar` to wherever you downloaded it.
 
 Windows
 -------
@@ -125,6 +118,4 @@ of [The Artistic License 2.0](LICENSE), except when otherwise noted.
 [5]: https://www.java.com/en/download/
 [6]: https://www.perl.org/get.html
 [7]: https://www.ruby-lang.org/en/documentation/installation/
-[8]: https://blast.ncbi.nlm.nih.gov/Blast.cgi?PAGE_TYPE=BlastDocs&DOC_TYPE=Download
-[9]: http://openjdk.java.net/
-[10]: https://github.com/lmrodriguezr/enveomics-gui/issues/1
+[8]: http://openjdk.java.net/

@@ -45,6 +45,7 @@ enveomics.jar: ../enveomics.rb bin lib/shoes4
 
 enveomics.app: enveomics.jar lib/appbundler-1.0.jar
 	ant enveomics
+	patch enveomics.app/Contents/Info.plist info-plist.patch
 
 enveomics.dmg: enveomics.app lib/template.dmg lib/README.pdf lib/LICENSE.pdf
 	hdiutil attach lib/template.dmg -noautoopen -quiet -mountpoint wc
