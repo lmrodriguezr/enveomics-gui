@@ -140,7 +140,11 @@ class EnveGUI < Shoes
 		     para strong("This script cannot be used due to unmet" +
 			" requirements:")
 		     @t.unmet.each do |r|
-			para r.description, margin:[10,0,10,0]
+			p = [r.description]
+			p += [" (",link("get"){ open_url r.source_url},")"] if
+			   not r.source_url.nil?
+			p << "."
+			para *p, margin:[10,0,10,0]
 		     end
 		     para ""
 		  end
@@ -224,7 +228,8 @@ class EnveGUI < Shoes
       self.scroll_top = 0
       background pattern(img_path("bg1.png"))
       stack do
-	 background rgb(178,229,244,1.0)
+	 background rgb(0,114,179,0.3)
+	 stack{ background rgb(0,0,0,1.0) } # workaround for shoes/shoes4#1190
 	 flow(width:1.0) do
 	    stack(width:40){}
 	    menu = [
@@ -236,13 +241,19 @@ class EnveGUI < Shoes
 	       ["About","/about","noun_229118_cc.png"]
 	    ]
 	    menu.each do |i|
-	       stack(width:50) do
-		  background rgb(158,209,224) if i[1]==in_page
-		  image img_path(i[2]),
-		     width:50, height:50, margin:2
-		  inscription i[0], align:"center"
+	       flow(width:60, height:65) do
+		  if i[1]==in_page
+		     background rgb(0,114,179,0.2)
+		     stack{ background rgb(0,0,0,1.0) } # shoes/shoes4#1190
+		  end
+		  stack(width:5, height:50){}
+		  stack(width:50) do
+		     image img_path(i[2]), width:50, height:50, margin:2
+		     inscription i[0], align:"center"
+		  end
+		  stack(width:5){}
 	       end.click { (i[1]=~/^https?:/) ? open_url(i[1]) : visit(i[1]) }
-	       stack(width:20){}
+	       stack(width:5){}
 	    end
 	 end
 	 stack(height:5, width:1.0){}

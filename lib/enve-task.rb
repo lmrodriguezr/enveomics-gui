@@ -127,11 +127,23 @@ class EnveRequires
    def initialize(o)
       @hash = o
       raise "Empty requirement." if
-	 @hash[:test].nil? and @hash[:description].nil?
+	 @hash[:test].nil? and @hash[:description].nil? and
+	 @hash[:perl_lib].nil? and @hash[:ruby_gem].nil?
+      # Presets for known requirements
+      unless @hash[:ruby_gem].nil?
+         @hash[:test]||= "ruby -r #{ruby_gem.shellescape} -e ''"
+	 @hash[:description]||= "Ruby gem #{ruby_gem}"
+	 @hash[:source_url]||= "https://rubygems.org/gems/#{ruby_gem}"
+      end
+      unless @hash[:perl_lib].nil?
+         @hash[:test]||= "perl -M#{perl_lib.shellescape} -e ''"
+	 @hash[:description]||= "Perl library #{perl_lib}"
+	 @hash[:source_url]||= "http://search.cpan.org/search?query=#{perl_lib}"
+      end
    end
    def pass?
       return true if hash[:test].nil?
-      `#{hash[:test]}`==1
+      !!system(hash[:test])
    end
    def description
       @hash[:description] ||= hash[:test]
@@ -139,5 +151,14 @@ class EnveRequires
    end
    def test
       hash[:test]
+   end
+   def ruby_gem
+      hash[:ruby_gem]
+   end
+   def perl_lib
+      hash[:perl_lib]
+   end
+   def source_url
+      hash[:source_url]
    end
 end
