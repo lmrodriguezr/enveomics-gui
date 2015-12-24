@@ -127,8 +127,10 @@ class EnveGUI < Shoes
       header
       stack(margin:[40,0,40,0]) do
 	 @t = $collection.task(task)
+	 @opt_stack = []
+	 #= Header
 	 title @t.task
-	 para @t.description
+	 para @t.description, margin_left:7
 	 unless @t.warn.empty? and @t.ready?
 	    para ""
 	    stack(margin:[50,0,50,0]) do
@@ -158,14 +160,30 @@ class EnveGUI < Shoes
 	 end
 	 unless @t.see_also.empty?
 	    para "See also: ", *@t.see_also.map{ |s|
-		  [link(s){visit "/script-#{s}" }, " "] }.flatten
+		  [link(s){visit "/script-#{s}" }, " "] }.flatten,
+		  margin_left:7
+	 end
+	 @button_show = button("Show optional parameters", hidden:true) do
+	    @t.each_option do |i,o|
+	       @opt_stack[i].hidden = false unless o.mandatory?
+	    end
+	    @button_hide.hidden = false
+	    @button_show.hidden = true
+	 end
+	 @button_hide = button("Hide optional parameters") do
+	    @t.each_option do |i,o|
+	       @opt_stack[i].hidden = true unless o.mandatory?
+	    end
+	    @button_hide.hidden = true
+	    @button_show.hidden = false
 	 end
 	 para "", margin:10
+	 #= Options
 	 @opt_value = []
 	 @opt_elem  = []
 	 @t.each_option do |opt_i,opt|
 	    next if opt.hidden?
-	    stack(margin:[10,0,10,0]) do
+	    @opt_stack[opt_i] = stack(margin:[10,0,10,0]) do
 	       subtitle opt.name
 	       para opt.description if opt.description and opt.arg!=:nil
 	       case opt.arg
@@ -197,11 +215,12 @@ class EnveGUI < Shoes
 	       end
 	       inscription opt.note if opt.note
 	       opt.source_urls.each{ |url| para link(url){ open_url(url) } }
+	       para "", margin:10
 	    end # stack (option)
-	    para "", margin:10
 	 end # each option
 	 para strong("* Required"), margin:[10,0,10,0]
 	 para ""
+	 #= Run!
 	 flow do
 	    button("Execute") do
 	       @values = []
@@ -228,7 +247,7 @@ class EnveGUI < Shoes
       self.scroll_top = 0
       background pattern(img_path("bg1.png"))
       stack do
-	 background rgb(0,114,179,0.3)
+	 background rgb(0,114,179,0.4)
 	 stack{ background rgb(0,0,0,1.0) } # workaround for shoes/shoes4#1190
 	 flow(width:1.0) do
 	    stack(width:40){}
@@ -243,14 +262,16 @@ class EnveGUI < Shoes
 	    menu.each do |i|
 	       flow(width:60, height:65) do
 		  if i[1]==in_page
-		     background rgb(0,114,179,0.2)
+		     background rgb(0,114,179,0.4)
 		     stack{ background rgb(0,0,0,1.0) } # shoes/shoes4#1190
 		  end
 		  stack(width:5, height:50){}
 		  stack(width:50) do
-		     image img_path(i[2]), width:50, height:50, margin:2
+		     image img_path((i[1]==in_page ? "w-" : "")+i[2]),
+			width:50, height:50, margin:2
 		     inscription i[0], align:"center",
-			size:(RbConfig::CONFIG['host_os']=~/linux|bsd/ ? 8 : 10)
+			size:(RbConfig::CONFIG['host_os']=~/linux|bsd/ ? 8 : 10),
+			stroke: (i[1]==in_page ? white : black)
 		  end
 		  stack(width:5){}
 	       end.click { (i[1]=~/^https?:/) ? open_url(i[1]) : visit(i[1]) }
