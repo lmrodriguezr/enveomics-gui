@@ -249,7 +249,8 @@ class EnveGUI < Shoes
 		  stack(width:5, height:50){}
 		  stack(width:50) do
 		     image img_path(i[2]), width:50, height:50, margin:2
-		     inscription i[0], align:"center"
+		     inscription i[0], align:"center",
+			size:(RbConfig::CONFIG['host_os']=~/linux|bsd/ ? 8 : 10)
 		  end
 		  stack(width:5){}
 	       end.click { (i[1]=~/^https?:/) ? open_url(i[1]) : visit(i[1]) }
