@@ -6,6 +6,8 @@ BLAST_LINUX_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-x64-linux.tar.gz"
 BLAST_WINDOWS_URL="$(BLAST_URL)/ncbi-blast-2.3.0+-x64-win64.tar.gz"
 BLAST_INCLUDE=--include "*/bin/makeblastdb*" --include "*/bin/blast[pn]*" --include "*/bin/tblast[xn]*"
 
+.PHONY: all clean
+
 all: enveomics.jar enveomics.dmg enveomics.exe
 
 #-- Dependencies
@@ -42,6 +44,7 @@ enveomics.jar: ../enveomics.rb bin lib/shoes4
 	cd lib/shoes4 && bin/shoes-swt -p swt:jar ../../jar-pkg/enveomics.rb
 	mv jar-pkg/pkg/enveomics.jar .
 	rm -r jar-pkg
+	chmod a+x enveomics.jar
 
 enveomics.app: enveomics.jar lib/appbundler-1.0.jar
 	ant enveomics
@@ -88,19 +91,19 @@ bin: bin/mac/blastp bin/linux/blastp bin/windows/blastp.exe
 bin/mac/blastp: lib/ncbi-blast-macosx.tar.gz
 	-mkdir -p bin/mac
 	tar $(BLAST_INCLUDE) -zxvf $<
-	mv ncbi-blast-*/bin/* bin/mac/
+	cp ncbi-blast-*/bin/* bin/mac/
 	rm -r ncbi-blast-*
 
 bin/linux/blastp: lib/ncbi-blast-linux.tar.gz
 	-mkdir -p bin/linux
 	tar $(BLAST_INCLUDE) -zxvf $<
-	mv ncbi-blast-*/bin/* bin/linux/
+	cp ncbi-blast-*/bin/* bin/linux/
 	rm -r ncbi-blast-*
 
 bin/windows/blastp.exe: lib/ncbi-blast-windows.tar.gz
 	-mkdir -p bin/windows
 	tar $(BLAST_INCLUDE) -zxvf $<
-	mv ncbi-blast-*/bin/* bin/windows/
+	cp ncbi-blast-*/bin/* bin/windows/
 	rm -r ncbi-blast-*
 
 lib/ncbi-blast-macosx.tar.gz:
