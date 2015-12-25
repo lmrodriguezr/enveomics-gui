@@ -12,6 +12,7 @@ require "enve-gui"
 
 ### MAIN
 begin
+   $stderr.puts "Ruby version: #{RUBY_VERSION}"
    $stderr.puts "Setting environment."
    EnveCollection.setup_bins
    $stderr.puts "Wearing shoes."

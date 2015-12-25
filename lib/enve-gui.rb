@@ -4,9 +4,8 @@
 # @license artistic license 2.0
 #
 
-require "tempfile"
-require "open3"
 require "enve-collection"
+
 if $IS_CLI
    require "shoes"
    require "shoes/swt"
@@ -157,6 +156,7 @@ class EnveGUI < Shoes
 		  end
 	       end
 	    end
+	    para ""
 	 end
 	 unless @t.see_also.empty?
 	    para "See also: ", *@t.see_also.map{ |s|
@@ -165,6 +165,7 @@ class EnveGUI < Shoes
 	 end
 	 @button_show = button("Show optional parameters", hidden:true) do
 	    @t.each_option do |i,o|
+	       next if @opt_stack[i].nil?
 	       @opt_stack[i].hidden = false unless o.mandatory?
 	    end
 	    @button_hide.hidden = false
@@ -172,6 +173,7 @@ class EnveGUI < Shoes
 	 end
 	 @button_hide = button("Hide optional parameters") do
 	    @t.each_option do |i,o|
+	       next if @opt_stack[i].nil?
 	       @opt_stack[i].hidden = true unless o.mandatory?
 	    end
 	    @button_hide.hidden = true
@@ -291,33 +293,26 @@ class EnveGUI < Shoes
    # =====================[ Controller : Tasks / Helpers ]
    def launch_analysis(t, values)
       begin
-	 log = Tempfile.new("enveomics")
-	 log.close
-	 cmd = t.build_cmd(values, log)
 	 window(title: "Running #{t.task}", width: 750, height: 512) do
 	    background "#B2E5F4" .. "#F1E1F4"
-	    @cmd = cmd
-	    @log = log
+	    @job = t.launch_job(values)
 	    stack(margin:30, width:1.0) do
 	       subtitle t.task
 	       para strong("Command:")
-	       edit_box @cmd, width:1.0, height:40, state:"readonly"
+	       edit_box @job.cmd, width:1.0, height:40, state:"readonly"
 	       para ""
-	       @start_time = Time.now
-	       @wait_thr = Open3.pipeline_start(@cmd).first
-	       para strong("Start time: "), @start_time.ctime
-	       para strong("Log: "), @log.path
+	       para strong("Start time: "), @job.start_time.ctime
+	       para strong("Log: "), @job.log_path
 	       @running = edit_box "", state:"readonly",
 					  width:1.0, height: 275
 	       animate(4) do |frame|
 		  unless @running.nil?
-		     @running.text = File.read(@log.path)
-		     if @wait_thr.alive?
-			@running.text += "\n#{@wait_thr.status}"+("."*(frame%4))
+		     @running.text = @job.log
+		     if @job.alive?
+			@running.text += "\n#{@job.status}"+("."*(frame%4))
 		     else
-			@log.unlink
 			para ""
-			para strong("Running time: "),Time.now-@start_time,"s."
+			para strong("Running time: "), @job.running_time, "s."
 			@running = nil
 		     end
 		  end
@@ -414,7 +409,8 @@ class EnveGUI < Shoes
       elsif RbConfig::CONFIG['host_os'] =~ /darwin/
 	 system("open #{url}")
       elsif RbConfig::CONFIG['host_os'] =~ /linux|bsd/
-	 system("xdg-open #{url}")
+	 # I added ' &', so it doesn't block
+	 system("xdg-open #{url} &")
       end
    end
 end

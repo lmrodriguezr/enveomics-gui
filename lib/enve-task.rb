@@ -1,5 +1,6 @@
 require "enve-option"
 require "enve-requires"
+require "enve-job"
 
 class EnveTask
    %w[RUBY AWK PERL BASH RSCRIPT].each do |i|
@@ -7,15 +8,15 @@ class EnveTask
       define_singleton_method(i){ class_variable_get("@@#{i}") }
    end
    @@RUBY = "jruby" unless system("#{@@RUBY} -e '{a:1}'")
-   @@AWK = "gawk" unless system("#{@@AWK} --version")
-   @@AWK = "mawk" unless system("#{@@AWK} --version")
+   @@AWK = "gawk" unless system("#{@@AWK} 'BEGIN{exit}'")
+   @@AWK = "mawk" unless system("#{@@AWK} 'BEGIN{exit}'")
    @@RSCRIPT = "Rscript"
    if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
       @@BASH = "bash.exe" unless system("#{@@BASH} --version")
       @@BASH = "sh.exe" unless system("#{@@BASH} --version")
-      @@AWK = "awk.exe" unless system("#{@@AWK} --version")
-      @@AWK = "gawk.exe" unless system("#{@@AWK} --version")
-      @@AWK = "mawk.exe" unless system("#{@@AWK} --version")
+      @@AWK = "awk.exe" unless system("#{@@AWK} 'BEGIN{exit}'")
+      @@AWK = "gawk.exe" unless system("#{@@AWK} 'BEGIN{exit}'")
+      @@AWK = "mawk.exe" unless system("#{@@AWK} 'BEGIN{exit}'")
    end
    attr_accessor :hash
    def initialize(o)
@@ -49,18 +50,18 @@ class EnveTask
    def requires
       if @requires.nil?
 	 @hash[:requires] ||= []
-	 @requires = [ EnveRequires.new({interpreter: interpreter}) ]
-	 @requires+= hash[:requires].map{ |r| EnveRequires.new(r) }
+	 @hash[:requires].unshift({interpreter: interpreter})
+	 @requires = hash[:requires].map{ |r| EnveRequires.new(r) }
       end
       @requires
    end
    def interpreter
       if @interpreter.nil?
-	 rgh = { nil=>nil, # <- just to enable regex syntax-highlight in vim
+	 regex_hash = {
 	    /\.rb$/ => "ruby", /\.pl$/ => "perl",
 	    /\.[Rr](script)?$/ => "Rscript",
 	    /\.g?awk$/ => "awk", /\.(ba)?sh$/ => "bash" }
-	 @interpreter = rgh.map{ |k,v| v if k =~ task }.compact.first
+	 @interpreter = regex_hash.map{ |k,v| v if k =~ task }.compact.first
 	 abort "Unknown interpreter for #{task}." if @interpreter.nil?
       end
       @interpreter
@@ -70,18 +71,6 @@ class EnveTask
    end
    def unmet
       requires.select{ |r| not r.pass? }
-   end
-   def reserve_stderr!
-      @reserved_stderr = true
-   end
-   def reserve_stdout!
-      @reserved_stdout = true
-   end
-   def reserved_stderr?
-      !!@reserved_stderr
-   end
-   def reserved_stdout?
-      !!@reserved_stdout
    end
    def explicit_task?
       options.map{ |o| o.arg==:task }.any?
@@ -96,58 +85,8 @@ class EnveTask
       @hash[:see_also] = [hash[:see_also]] unless hash[:see_also].is_a? Array
       hash[:see_also]
    end
-   def build_cmd(values, logfile)
-      scripts = File.expand_path("enveomics-master/Scripts",EnveCollection.home)
-      task_cmd = []
-      task_cmd << EnveTask.class_variable_get("@@#{interpreter.upcase}")
-      task_cmd << "-f" if interpreter == "awk"
-      task_cmd << File.expand_path(task, scripts).shellescape
-      cmd = []
-      each_option do |i,o|
-	 if o.arg==:task
-	    # Place task here
-	    cmd += task_cmd
-	    task_cmd = []
-	 elsif o.as_is?
-	    # As is, unescaped
-	    cmd << o.opt
-	    reserve_stderr! if o.opt=="2>"
-	    reserve_stdout! if o.opt==">"
-	 else
-	    if o.arg!=:nil and (values[i].nil? or values[i]=="")
-	       raise "#{o.name} is mandatory." if o.mandatory?
-	       next
-	    end
-	    case o.arg
-	       # Flags
-	       when :nil
-		  cmd << o.opt.shellescape if values[i]
-	       # Numbers
-	       when :integer, :float
-		  values[i] = o.arg==:integer ? values[i].to_i : values[i].to_f
-		  cmd << o.opt.shellescape unless o.opt.nil?
-		  cmd << values[i].to_s.shellescape
-	       # Strings
-	       when :character
-		  cmd << o.opt.shellescape unless o.opt.nil?
-		  cmd << values[i].to_s[0].shellescape unless o.opt.nil?
-	       else
-		  cmd << o.opt.shellescape unless o.opt.nil?
-		  cmd << values[i].shellescape
-	    end
-	 end
-      end unless values.nil?
-      cmd.unshift(*task_cmd)
-      cmd << hash[:help_arg] if values.nil? and not hash[:help_arg].nil?
-      if reserved_stderr? and reserved_stdout?
-	 File.open(logfile.path, "w"){}
-      else
-	 cmd << ( reserved_stderr? ? ">" :
-		  reserved_stdout? ? "2>" :
-		  "&>" )
-	 cmd << logfile.path.shellescape
-      end
-      cmd.join(" ")
+   def launch_job(values)
+      EnveJob.new(self, values)
    end
 end
 

@@ -1,5 +1,3 @@
-require "shellwords"
-
 class EnveOption
    @@TYPE = {
       nil: {name: ""},
