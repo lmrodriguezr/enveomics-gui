@@ -1,6 +1,22 @@
 require "enve-option"
+require "enve-requires"
 
 class EnveTask
+   %w[RUBY AWK PERL BASH RSCRIPT].each do |i|
+      class_variable_set("@@#{i}", i.downcase)
+      define_singleton_method(i){ class_variable_get("@@#{i}") }
+   end
+   @@RUBY = "jruby" unless system("#{@@RUBY} -e '{a:1}'")
+   @@AWK = "gawk" unless system("#{@@AWK} --version")
+   @@AWK = "mawk" unless system("#{@@AWK} --version")
+   @@RSCRIPT = "Rscript"
+   if RbConfig::CONFIG['host_os'] =~ /mswin|mingw|cygwin/
+      @@BASH = "bash.exe" unless system("#{@@BASH} --version")
+      @@BASH = "sh.exe" unless system("#{@@BASH} --version")
+      @@AWK = "awk.exe" unless system("#{@@AWK} --version")
+      @@AWK = "gawk.exe" unless system("#{@@AWK} --version")
+      @@AWK = "mawk.exe" unless system("#{@@AWK} --version")
+   end
    attr_accessor :hash
    def initialize(o)
       @hash = o
@@ -26,18 +42,28 @@ class EnveTask
    def each_option(&blk)
       i=0
       options.each do |o|
-	 if blk.arity==1
-	    blk[o]
-	 else
-	    blk[i,o]
-	 end
+	 blk.arity==1 ? blk[o] : blk[i,o]
 	 i+=1
       end
    end
    def requires
-      @hash[:requires] ||= []
-      @requires ||= hash[:requires].map{ |r| EnveRequires.new(r) }
+      if @requires.nil?
+	 @hash[:requires] ||= []
+	 @requires = [ EnveRequires.new({interpreter: interpreter}) ]
+	 @requires+= hash[:requires].map{ |r| EnveRequires.new(r) }
+      end
       @requires
+   end
+   def interpreter
+      if @interpreter.nil?
+	 rgh = { nil=>nil, # <- just to enable regex syntax-highlight in vim
+	    /\.rb$/ => "ruby", /\.pl$/ => "perl",
+	    /\.[Rr](script)?$/ => "Rscript",
+	    /\.g?awk$/ => "awk", /\.(ba)?sh$/ => "bash" }
+	 @interpreter = rgh.map{ |k,v| v if k =~ task }.compact.first
+	 abort "Unknown interpreter for #{task}." if @interpreter.nil?
+      end
+      @interpreter
    end
    def ready?
       requires.map{ |r| r.pass? }.all?
@@ -57,6 +83,9 @@ class EnveTask
    def reserved_stdout?
       !!@reserved_stdout
    end
+   def explicit_task?
+      options.map{ |o| o.arg==:task }.any?
+   end
    def warn
       @hash[:warn] ||= ""
       @hash[:warn] = hash[:warn].join(" ") if hash[:warn].is_a? Array
@@ -68,9 +97,10 @@ class EnveTask
       hash[:see_also]
    end
    def build_cmd(values, logfile)
-      scripts = File.expand_path("enveomics-master/Scripts", EnveCollection.home)
+      scripts = File.expand_path("enveomics-master/Scripts",EnveCollection.home)
       task_cmd = []
-      task_cmd << $EXT_RUBY if task =~ /\.rb$/
+      task_cmd << EnveTask.class_variable_get("@@#{interpreter.upcase}")
+      task_cmd << "-f" if interpreter == "awk"
       task_cmd << File.expand_path(task, scripts).shellescape
       cmd = []
       each_option do |i,o|
@@ -121,44 +151,3 @@ class EnveTask
    end
 end
 
-
-class EnveRequires
-   attr_accessor :hash
-   def initialize(o)
-      @hash = o
-      raise "Empty requirement." if
-	 @hash[:test].nil? and @hash[:description].nil? and
-	 @hash[:perl_lib].nil? and @hash[:ruby_gem].nil?
-      # Presets for known requirements
-      unless @hash[:ruby_gem].nil?
-         @hash[:test]||= "ruby -r #{ruby_gem.shellescape} -e ''"
-	 @hash[:description]||= "Ruby gem #{ruby_gem}"
-	 @hash[:source_url]||= "https://rubygems.org/gems/#{ruby_gem}"
-      end
-      unless @hash[:perl_lib].nil?
-         @hash[:test]||= "perl -M#{perl_lib.shellescape} -e ''"
-	 @hash[:description]||= "Perl library #{perl_lib}"
-	 @hash[:source_url]||= "http://search.cpan.org/search?query=#{perl_lib}"
-      end
-   end
-   def pass?
-      return true if hash[:test].nil?
-      !!system(hash[:test])
-   end
-   def description
-      @hash[:description] ||= hash[:test]
-      hash[:description]
-   end
-   def test
-      hash[:test]
-   end
-   def ruby_gem
-      hash[:ruby_gem]
-   end
-   def perl_lib
-      hash[:perl_lib]
-   end
-   def source_url
-      hash[:source_url]
-   end
-end
