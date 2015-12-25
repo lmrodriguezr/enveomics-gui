@@ -58,7 +58,7 @@ enveomics.dmg: enveomics.app lib/template.dmg lib/README.pdf lib/LICENSE.pdf
 	ditto -rsrc lib/README.pdf wc/README.pdf
 	ditto -rsrc enveomics.app wc/enveomics.app
 	ditto -rsrc ../img/bg1-dmg.png wc/.background/bg1-dmg.png
-	osascript dmg.as
+	osascript dmg.applescript
 	WC_D=`hdiutil info | grep wc | grep Apple_HFS | awk '{print $$1}'` && \
 	   hdiutil detach $$WC_D -quiet -force
 	hdiutil convert lib/template.dmg -quiet -format UDZO \
