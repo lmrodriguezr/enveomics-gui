@@ -3,6 +3,7 @@ require "enve-requires"
 require "enve-job"
 
 class EnveTask
+   # Class-level
    %w[RUBY AWK PERL BASH RSCRIPT].each do |i|
       class_variable_set("@@#{i}", i.downcase)
       define_singleton_method(i){ class_variable_get("@@#{i}") }
@@ -18,6 +19,7 @@ class EnveTask
       @@AWK = "gawk.exe" unless system("#{@@AWK} 'BEGIN{exit}'")
       @@AWK = "mawk.exe" unless system("#{@@AWK} 'BEGIN{exit}'")
    end
+   # Instance-level
    attr_accessor :hash
    def initialize(o)
       @hash = o

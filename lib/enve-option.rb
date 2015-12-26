@@ -1,4 +1,5 @@
 class EnveOption
+   # Class-level
    @@TYPE = {
       nil: {name: ""},
       task: {name: "Script"},
@@ -15,6 +16,7 @@ class EnveOption
    def self.TYPE
       @@TYPE
    end
+   # Instance-level
    attr_accessor :hash
    def initialize(o)
       if o.is_a? Hash
@@ -55,6 +57,9 @@ class EnveOption
    def arg
       @hash[:arg] ||= :nil
       hash[:arg].to_sym
+   end
+   def multiple_sep
+      hash[:multiple_sep]
    end
    def values
       raise "Options of 'select' type must contain a 'values' array: " +

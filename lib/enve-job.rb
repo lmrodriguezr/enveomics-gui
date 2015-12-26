@@ -82,27 +82,28 @@ class EnveJob
 	       psym = EnvePipe.PIPE_SYMBOL.key(o.opt)
 	       psym.nil? ? pipe.append(o.opt, false) : pipe.add_ring(psym)
 	    else
-	       if o.arg!=:nil and (values[i].nil? or values[i]=="")
+	       values[i] = values[i].map{ |v| v unless v.nil? or v=="" }.compact
+	       if o.arg!=:nil and values[i].empty?
 		  raise "#{o.name} is mandatory." if o.mandatory?
 		  next
 	       end
-	       case o.arg
+	       vals = case o.arg
 		  # Flags
 		  when :nil
-		     pipe.append o.opt if values[i]
+		     values[i].map{ |v| o.opt.shellescape if v }.compact
 		  # Numbers
 		  when :integer, :float
 		     pipe.append o.opt unless o.opt.nil?
-		     v = o.arg==:integer ? values[i].to_i : values[i].to_f
-		     pipe.append v.to_s
+		     values[i].map{ |v| o.arg==:integer ? v.to_i : v.to_f }
 		  # Strings
 		  when :character
 		     pipe.append o.opt unless o.opt.nil?
-		     pipe.append values[i].to_s[0]
+		     values[i].map{ |v| v.to_s[0] }
 		  else
 		     pipe.append o.opt unless o.opt.nil?
-		     pipe.append values[i]
+		     values[i]
 	       end
+	       pipe.append(vals.join(o.multiple_sep), false)
 	    end
 	 end
 	 return pipe
