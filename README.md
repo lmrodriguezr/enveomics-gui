@@ -86,8 +86,8 @@ from the source. Check out [INSTALL-HARD.md](INSTALL-HARD.md) to learn how.
 Coming soon
 ===========
 * Support for `enveomics.R`.
-* Input multiple files for scripts supporting them.
-* Easy installation, so terminal use is eliminated.
+* Examples.
+* Search.
 
 Credits
 =======
