@@ -52,12 +52,14 @@ c.tasks.each do |task|
    issues << "Warnings don't end in period: " +
       task.warn if not task.warn.empty? and
       not %w(. ? !).include?(task.warn[-1])
-   bad_req = (task.requires.map do |r|
-      (r.hash[:description].nil? or r.hash[:description].empty?) ?
-      "Requirement wihtout description: #{r.test}." :
+   bad_req = task.requires.map do |r|
+      (r.description.nil? or r.description.empty?) ?
+      "Requirement without description: #{r.test}." :
       (r.test.nil? or r.test.empty?) ?
-      "Requirement without test: #{r.description}" : nil
-   end.compact)
+      "Requirement without test: #{r.description}" :
+      (%(. ? !).include? r.description[-1]) ?
+      "Requirement's description doesn't end in period: #{r.description}" : nil
+   end.compact
    issues += bad_req if bad_req.any?
    task.see_also.each do |s|
       issues << "See-also linking to unexisting task: #{s}." if
