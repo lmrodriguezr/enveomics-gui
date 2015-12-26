@@ -22,9 +22,14 @@ class EnveJob
       pipe.add_log(log_path)
       @start_time = Time.now
       # This seems like the best solution, but it's not supported by
-      # JRuby 1.7.x, so it breaks packaging. See #15.
+      # JRuby 1.7.x, so it breaks packaging [See #15]:
       # @wait_thr = Open3.pipeline_start(*pipe.to_open3_pipeline).last
-      @wait_thr = Open3.pipeline_start(cmd).last
+      @script = Tempfile.new("enveomics")
+      @script.puts cmd
+      @script.close
+      script_call = "#{EnveTask.BASH.shellescape} #{@script.path.shellescape}"
+      @wait_thr = Open3.pipeline_start(script_call).last
+      # And some other options to explore in the future:
       # @wait_thr = spawn(*pipe.to_spawn)
       # @wait_thr = Thread.new { IO.popen(cmd){} }
    end
@@ -33,7 +38,10 @@ class EnveJob
    end
    def alive?
       o = @wait_thr.alive?
-      @end_time ||= Time.now unless o
+      if !o and @end_time.nil?
+	 @end_time = Time.now
+	 @script.unlink
+      end
       o
    end
    def cmd
@@ -71,17 +79,8 @@ class EnveJob
 	    if o.arg == :task
 	       pipe.append(call_task, false)
 	    elsif o.as_is?
-	       if o.opt == ">"
-		  pipe.add_ring :stdout
-	       elsif o.opt == "2>"
-		  pipe.add_ring :stderr
-	       elsif o.opt == "%>"
-	          pipe.add_ring :stderrout
-	       elsif o.opt == "<"
-		  pipe.add_ring :stdin
-	       else
-		  pipe.append(o.opt, false)
-	       end
+	       psym = EnvePipe.PIPE_SYMBOL.key(o.opt)
+	       psym.nil? ? pipe.append(o.opt, false) : pipe.add_ring(psym)
 	    else
 	       if o.arg!=:nil and (values[i].nil? or values[i]=="")
 		  raise "#{o.name} is mandatory." if o.mandatory?
@@ -112,8 +111,10 @@ end
 
 class EnvePipe
    # Class-level
-   @@RING_SYMBOL = {stderr:"2>", stdout:">", stderrout:"&>", stdin:"<", cmd:"|"}
-   @@OPEN3_SYMBOL = {stderr: :err, stdout: :out, stdin: :in}
+   @@PIPE_SYMBOL = {stderr:"2>", stdout:">", stderrout:"&>", stdin:"<", cmd:"|"}
+   @@SPAWN_SYMBOL = {stderr: :err, stdout: :out, stdin: :in}
+   def self.PIPE_SYMBOL; @@PIPE_SYMBOL; end
+   def self.SPAWN_SYMBOL; @@SPAWN_SYMBOL; end
    # Instance-level
    attr_accessor :pipe, :type
    def initialize
@@ -170,8 +171,8 @@ class EnvePipe
 	    # For some reason this works from jruby but not from the jar:
 	    opts[:err] = `echo #{pipe[i]}`.chomp
 	    opts[:out] = `echo #{pipe[i]}`.chomp
-	 elsif [:stderr,:stdout,:stdin].include? type[i]
-	    opts[@@OPEN3_SYMBOL[type[i]]] = `echo #{pipe[i]}`.chomp
+	 elsif @@SPAWN_SYMBOL.keys.include? type[i]
+	    opts[@@SPAWN_SYMBOL[type[i]]] = `echo #{pipe[i]}`.chomp
 	 else
 	    raise "Unsupported type: #{type[i]}."
 	 end
@@ -187,7 +188,7 @@ class EnvePipe
    def to_s
       o = ""
       pipe.each_index do |i|
-	 o += " " + @@RING_SYMBOL[type[i]] + " " unless i==0
+	 o += " " + @@PIPE_SYMBOL[type[i]] + " " unless i==0
 	 o += pipe[i]
       end
       o
