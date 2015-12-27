@@ -1,5 +1,6 @@
 require "enve-task"
 require "enve-json"
+require "enve-example"
 
 class EnveCollection
    #= Class-level
@@ -44,18 +45,21 @@ class EnveCollection
    end
    
    #= Instance-level
-   attr_accessor :hash, :manif
+   attr_accessor :hash, :manif, :examples
    def initialize(manif=nil)
       manif ||= EnveCollection.manif
       @manif = manif
       @hash = EnveJSON.parse(manif)
       
       @hash[:categories] ||= {}
-      unless @hash[:tasks].nil?
-	 @tasks = Hash[@hash[:tasks].map do |h|
+      unless hash[:tasks].nil?
+	 @tasks = Hash[hash[:tasks].map do |h|
 	    t = EnveTask.new(h)
 	    [t.task, t]
 	 end]
+      end
+      unless hash[:examples].nil?
+	 @examples = hash[:examples].map { |i| EnveExample.new(i,self) }
       end
       raise "Impossible to initialize collection with empty manifest: " +
 	 "#{manif}." if @tasks.nil?
