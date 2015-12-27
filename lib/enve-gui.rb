@@ -15,10 +15,12 @@ end
 class EnveGUI < Shoes
    url "/", :home
    url "/index", :index
-   url "/about", :about
+   url "/examples", :examples
    url "/update", :update
-   url "/subcat-(.*--.*)", :subcat
-   url "/script-(.*)", :script
+   url "/about", :about
+   url "/subcat/(.*/.*)", :subcat
+   url "/script/(.+)", :script
+   url "/example/(\\d+)", :example
    $img_path   = File.expand_path("../../img", __FILE__)
    $enve_jobs  = {}
    $citation   = [
@@ -74,7 +76,7 @@ class EnveGUI < Shoes
 		  subtitle cat_name
 		  cat_set.each do |subcat_name, subcat_set|
 		     stack(margin: 10) do
-			para strong(subcat_name)
+			tagline subcat_name
 			show_subcat(subcat_set)
 		     end # stack (subcategory)
 		  end # each subcategory
@@ -85,15 +87,22 @@ class EnveGUI < Shoes
       footer
    end
 
-   # Scripts per subcategory
-   def subcat(subcatpath)
-      (cat,subcat) = subcatpath.split("--")
-      header
+   # Examples
+   def examples
+      header "/examples"
       stack(margin:[40,0,40,0]) do
-	 title cat, " / ", subcat
-	 cat_set = $collection.category(cat)
-	 subcat_set = cat_set[subcat.to_sym]
-	 show_subcat(subcat_set)
+	 $collection.examples.each_index do |i|
+	    para ""
+	    box(click:"/example/#{i}") do
+	       para ""
+	       e = $collection.examples[i]
+	       subtitle e.description, margin_left:20, margin_right:20
+	       para "Using ", e.task.task, ".",
+		  size:15, margin_right:20, align:"right"
+	       para ""
+	    end
+	    para ""
+	 end unless $collection.examples.nil?
       end
       footer
    end
@@ -102,8 +111,6 @@ class EnveGUI < Shoes
    def about
       header "/about"
       stack(margin:[40,0,40,0]) do
-	 title "About the enveomics collection", align:"center"
-	 para ""
 	 subtitle "Citation"
 	 edit_box $citation, width:1.0, height:60, state: "readonly"
 	 para ""
@@ -122,97 +129,91 @@ class EnveGUI < Shoes
    end
 
    # Script query
-   def script(task)
+   def script(task, example=nil)
       header
       stack(margin:[40,0,40,0]) do
-	 @t = $collection.task(task)
-	 @opt_stack = []
+	 $t = $collection.task(task)
+	 $opt_stack = []
 	 #= Header
-	 title @t.task
-	 para @t.description, margin_left:7
-	 show_task_warns @t
-	 para "See also: ", *@t.see_also.map{ |s|
-	       [link(s){visit "/script-#{s}" }, " "] }.flatten,
-	       margin_left:7 unless @t.see_also.empty?
+	 unless example.nil?
+	    para strong("Test example:")
+	    para $example.description, left_margin:20, right_margin:20
+	    para ""
+	 end
+	 title $t.task
+	 para $t.description, margin_left:7
+	 show_task_warns $t
+	 para "See also: ", *$t.see_also.map{ |s|
+	       [link(s){visit "/script/#{s}" }, " "] }.flatten,
+	       margin_left:7 unless $t.see_also.empty?
 	 #= Options
-	 @opt_elem  = []
-	 show_task_options(@t)
+	 $opt_elem  = []
+	 show_task_options($t)
 	 #= Run!
-	 show_task_run(@t)
+	 show_task_run($t)
       end # stack (task)
       footer
    end
 
-   def show_home
-      $home_info.text = "Loading collection..."
-      $collection ||= EnveCollection.new($manif_path)
-      $home_info.text = ""
-      
-      para ""
-      flow(width:1.0) do
-	 # (Sub)categories
-	 stack(width:0.38) do
-	    $collection.each_category do |cat, cat_set|
-	       subtitle cat, align:"right"
-	       inscription ""
-	       cat_set.each do |subcat, subcat_set|
-		  tagline link(subcat, click:"/subcat-#{cat}--#{subcat}"),
-		     weight:"bold", align:"right"
-		  para "#{subcat_set.count} tasks", align:"right"
-		  inscription ""
-	       end # each subcategory
-	       para ""
-	    end # each category
-	 end # stack (collection)
-	 # Separator
-	 stack(width:0.04){}
-	 # Sidebar for fun stuff
-	 stack(width:0.58) do
-	    subtitle "The most popular"
-	    inscription ""
-	    %w(ani.rb aai.rb FastQ.split.pl Taxonomy.silva2ncbi.rb
-		     AlphaDiversity.pl).each do |t|
-	       para strong(link(t, click:"/script-#{t}"), ": "),
-		  $collection.task(t).description
-	       inscription ""
-	    end
-	    para ""
-	    subtitle "Some random suggestions"
-	    inscription ""
-	    $collection.tasks.sample(5).each do |t|
-	       para strong(link(t.task, click:"/script-#{t.task}"), ": "),
-		  t.description
-	       inscription ""
-	    end
-	    para ""
-	    subtitle "Citation"
-	    inscription ""
-	    para $citation
-	    para ""
-	    inscription ""
-	    subtitle "GUI Resources"
-	    inscription ""
-	    para $gui_citation
-	    para ""
-	    inscription ""
-	 end
-      end # flow (the whole ordeal)
+   # Load an example
+   def example(index)
+      $example = $collection.examples[index.to_i]
+      script($example.task.task, $example)
+      fill_task_values($example.values)
    end
-   
+
+   # Generic helper
+   def box(opts={}, &blk)
+      flow(margin_bottom:5) do
+	 opts[:alpha] ||= 0.2
+	 opts[:side_line] ||= enve_blue
+	 opts[:background] ||= enve_blue(opts[:alpha])
+	 stack(width: 5, height: 1.0) do
+	    background opts[:side_line]
+	 end unless opts[:right]
+	 stack(width: -5) do
+	    background opts[:background]
+	    s = stack(margin:5, &blk)
+	    unless opts[:click].nil?
+	       s.click{ visit opts[:click] }
+	       $clicky << s
+	    end
+	 end
+	 stack(width: 5, height: 1.0) do
+	    background opts[:side_line]
+	 end if opts[:right]
+      end
+   end
+
+   def enve_blue(alpha=1.0)
+      rgb(0,114,179,alpha)
+   end
+
+   def enve_red(alpha=1.0)
+      rgb(179,0,3,alpha)
+   end
+
    private
 
       # =====================[ View : Elements ]
       def header(in_page="")
+	 # workaround to shoes/shoes4#1212:
+	 $clicky ||= []
+	 $clicky.each{ |i| i.hide }
+	 $clicky = []
+	 
+	 # Header
 	 self.scroll_top = 0
 	 background pattern(img_path "bg1.png")
 	 stack do
-	    background rgb(0,114,179,0.4)
+	    background enve_blue(0.4)
 	    stack{ background rgb(0,0,0,1.0) } # workaround to shoes/shoes4#1190
 	    flow(width:1.0) do
 	       stack(width:40){}
 	       menu = [
 		  ["Home","/","noun_208357_cc.png"],
 		  ["All tasks","/index","noun_208394_cc.png"],
+		  ["Examples","/examples","noun_229087_cc.png"],
 		  ["Update","/update","noun_229107_cc.png"],
 		  ["Website","http://enve-omics.ce.gatech.edu/",
 		     "noun_208472_cc.png"],
@@ -221,7 +222,7 @@ class EnveGUI < Shoes
 	       menu.each do |i|
 		  flow(width:60, height:65) do
 		     if i[1]==in_page
-			background rgb(0,114,179,0.4)
+			background enve_blue(0.4)
 			stack{ background rgb(0,0,0,1.0) } # shoes/shoes4#1190
 		     end
 		     stack(width:5, height:50){}
@@ -244,32 +245,98 @@ class EnveGUI < Shoes
       end
 
       def footer
-	 para "", margin:50
+	 stack(height:40){}.parent
+	 stack do
+	    stroke enve_blue
+	    flow do
+	       stack(height:2, width:0.25){}
+	       stack(height:2, width:0.5){ background enve_blue }
+	    end
+	    stack(margin:10) do
+	       inscription "Developed by ", link("Luis M. Rodriguez-R"){
+			   open_url "https://lmrodriguezr.github.io"}, " at ",
+		  link("Kostas lab"){open_url "http://enve-omics.gatech.edu/"},
+		  ".", align:"center"
+	    end
+	    stroke black
+	 end
       end
       
+      def show_home
+	 $home_info.text = "Loading collection..."
+	 $collection ||= EnveCollection.new($manif_path)
+	 $home_info.text = ""
+	 
+	 para ""
+	 flow(width:1.0) do
+	    # (Sub)categories side menu
+	    stack(width:0.23) do
+	       $collection.each_category do |cat, cat_set|
+		  box(alpha:0.7, right:true) do
+		     tagline cat, align:"right", stroke: white
+		  end
+		  cat_set.each do |subcat, subcat_set|
+		     box(click:"/subcat/#{cat}/#{subcat}",right:1,alpha:0.45) do
+			para strong(subcat), margin_bottom:2, align:"right"
+			para "#{subcat_set.count} scripts", align:"right"
+		     end
+		  end # each subcategory
+		  para ""
+	       end # each category
+	    end # stack (collection)
+	    # Separator
+	    stack(width:0.04){}
+	    # Highlights
+	    stack(width:0.73) do
+	       subtitle "The most popular"
+	       inscription ""
+	       %w(ani.rb aai.rb FastQ.split.pl Taxonomy.silva2ncbi.rb
+			AlphaDiversity.pl).each do |t|
+		  show_task_link($collection.task(t))
+	       end
+	       para ""
+	       subtitle "Some random suggestions"
+	       inscription ""
+	       $collection.tasks.sample(5).each do |t|
+		  show_task_link(t)
+	       end
+	    end
+	 end # flow (the whole ordeal)
+      end
+      
+      def subcat(subcatpath)
+	 (cat,subcat) = subcatpath.split("/")
+	 header
+	 stack(margin:[40,0,40,0]) do
+	    tagline cat, " / ", subcat
+	    cat_set = $collection.category(cat)
+	    subcat_set = cat_set[subcat.to_sym]
+	    show_subcat(subcat_set)
+	 end
+	 footer
+      end
+
       def show_subcat(subcat_set)
 	 subcat_set.each do |t_name|
 	    t = $collection.task(t_name)
-	    if t.nil?
-	       para t_name, stroke: "#777", margin: 5
-	    else
-	       para link(t.task, click: "/script-#{t.task}"),
-		  ": ", t.description, margin: 5
-	    end
-	 end # each task
+	    show_task_link(t) unless t.nil?
+	 end
+      end
+
+      def show_task_link(task)
+	 box(click:"/script/#{task.task}") do
+	    para strong(task.task), margin_bottom:2
+	    para task.description
+	 end
       end
 
       def show_task_warns(task)
 	 return if task.warn.empty? if task.ready?
-	 para ""
-	 stack(margin:[50,0,50,0]) do
-	    background "#fdd"..."#f99"
-	    border "#300"
-	    stack(margin:[20,0,20,0]) do
-	       para ""
+	 stack(margin:10) do
+	    box(background:enve_red(0.3), side_line:enve_red) do
 	       if not task.ready?
 		  para strong("This script cannot be used due to unmet" +
-		     " requirements:")
+		     " requirements:"), margin_bottom:2
 		  task.unmet.each do |r|
 		     p = [r.description]
 		     p += [" (",link("get"){ open_url r.source_url},")"] if
@@ -277,44 +344,33 @@ class EnveGUI < Shoes
 		     p << "."
 		     para *p, margin:[10,0,10,0]
 		  end
-		  para ""
+		  para "" unless task.warn.empty?
 	       end
 	       unless task.warn.empty?
-		  para strong("Warning")
+		  para strong("Warning"), margin_bottom:2
 		  para task.warn, margin:[10,0,10,0]
-		  para ""
 	       end
 	    end
 	 end
-	 para ""
       end
 
       def show_task_options(task)
 	 #= Show/Hide optional parameters
-	 # FIXME This code is redundant and uggly:
-	 @button_show = button("Show optional parameters", hidden:true) do
+	 @button_show_hide = button("Hide optional parameters") do
 	    task.each_option do |i,o|
-	       next if @opt_stack[i].nil?
-	       @opt_stack[i].toggle unless o.mandatory?
+	       next if $opt_stack[i].nil?
+	       $opt_stack[i].toggle unless o.mandatory?
 	    end
-	    @button_hide.toggle
-	    @button_show.toggle
-	 end
-	 @button_hide = button("Hide optional parameters") do
-	    task.each_option do |i,o|
-	       next if @opt_stack[i].nil?
-	       @opt_stack[i].toggle unless o.mandatory?
-	    end
-	    @button_hide.toggle
-	    @button_show.toggle
+	    @button_show_hide.text = (@button_show_hide.text =~ /^Hide/ ?
+	       "Hide optional parameters" : "Show optional parameters")
 	 end
 	 para "", margin:10
 	 #= Each option
 	 @opt_plus_button = []
 	 task.each_option do |opt_i, opt|
 	    next if opt.hidden?
-	    @opt_elem[opt_i] = []
-	    @opt_stack[opt_i] = stack(margin:[10,0,10,0]) do
+	    $opt_elem[opt_i] = []
+	    $opt_stack[opt_i] = stack(margin:[10,0,10,0]) do
 	       subtitle opt.name
 	       para opt.description if opt.description and opt.arg!=:nil
 	       @opt_plus_button[opt_i] = stack do
@@ -348,21 +404,21 @@ class EnveGUI < Shoes
       end
       def show_task_option_check(opt, opt_i)
 	 flow do
-	    @opt_elem[opt_i] << check
+	    $opt_elem[opt_i] << check
 	    para opt.description if opt.description
 	 end
       end
 
       def show_task_option_select(opt, opt_i)
-	 @opt_elem[opt_i] << list_box(items: opt.values)
+	 $opt_elem[opt_i] << list_box(items: opt.values)
       end
 
       def show_task_option_edit(opt, opt_i)
-	 @opt_elem[opt_i] << edit_line(opt.default)
+	 $opt_elem[opt_i] << edit_line(opt.default)
       end
 
       def show_task_option_file(opt, opt_i)
-	 opt_j = @opt_elem[opt_i].size
+	 opt_j = $opt_elem[opt_i].size
 	 flow do
 	    b_t = {in_file: "Open file", out_file: "Save as",
 	       in_dir: "Open folder", out_dir: "Save folder as"}
@@ -372,10 +428,10 @@ class EnveGUI < Shoes
 		  opt.arg==:in_dir ? Shoes.ask_open_folder :
 		  Shoes.ask_save_folder
 	       unless file.nil?
-		  @opt_elem[opt_i][opt_j].text = file
+		  $opt_elem[opt_i][opt_j].text = file
 	       end
 	    end
-	    @opt_elem[opt_i] << edit_line("")
+	    $opt_elem[opt_i] << edit_line("")
 	 end
       end
 
@@ -384,14 +440,14 @@ class EnveGUI < Shoes
 	    button("Execute") do
 	       @values = []
 	       task.each_option do |opt_i, opt|
-		  next if @opt_elem[opt_i].nil?
-		  @values[opt_i] = @opt_elem[opt_i].map { |e|
+		  next if $opt_elem[opt_i].nil?
+		  @values[opt_i] = $opt_elem[opt_i].map { |e|
 		     e.is_a?(Check) ? e.checked? : e.text
 		  }
 	       end
 	       launch_analysis(task, @values)
 	    end
-	    button("Reset defaults"){ visit "/script-#{task}" }
+	    button("Reset defaults"){ visit "/script/#{task}" }
 	    unless task.hash[:help_arg].nil?
 	       button("Embedded help") do
 		  launch_analysis(task, nil)
@@ -432,6 +488,41 @@ class EnveGUI < Shoes
 	 rescue => e
 	    Shoes.alert "#{e}\n\n#{e.backtrace.first}"
 	 end
+      end
+
+      def fill_task_values(values)
+	 $out_dir = nil
+	 $in_dir = File.expand_path("enveomics-master/Tests",EnveCollection.home)
+	 $t.each_option do |opt_i, opt|
+	    opt_j = -1
+	    values[opt_i].each do |v|
+	       next if v.nil?
+	       opt_j += 1
+	       # Create new slots if necessary
+	       if $opt_elem[opt_i].size-1 < opt_j
+		  @opt_plus_button[opt_i].append do
+		     show_task_option(opt, opt_i)
+		  end
+	       end
+	       # Fill it
+	       case opt.arg
+		  when :nil
+		     $opt_elem[opt_i][opt_j].checked = v
+		  when :in_file,:in_dir
+		     $opt_elem[opt_i][opt_j].text = File.expand_path(v,$in_dir)
+		  when :out_file,:out_dir
+		     while $out_dir.nil?
+			Shoes.alert("Please select an output folder.")
+			$out_dir = Shoes.ask_save_folder
+		     end
+		     $opt_elem[opt_i][opt_j].text = File.expand_path(v,$out_dir)
+		  when :select
+		     $opt_elem[opt_i][opt_j].choose(v)
+		  when :string, :integer, :float
+		     $opt_elem[opt_i][opt_j].text = v
+	       end
+	    end # values.each
+	 end # each_option
       end
       
       # =====================[ Controller : Misc / Helpers ]
