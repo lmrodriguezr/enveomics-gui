@@ -1,12 +1,12 @@
 require "json"
 
 class EnveJSON
-   # Class-level
+   #= Class-level
    def self.parse(file)
       EnveJSON.new(file).to_h
    end
    
-   # Instance-level
+   #= Instance-level
    attr_accessor :file, :hash
    def initialize(file, parse=true, hash={})
       @file = file
