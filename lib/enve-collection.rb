@@ -1,7 +1,8 @@
-require "json"
 require "enve-task"
+require "enve-json"
 
 class EnveCollection
+   #= Class-level
    @@HOME = nil
    def self.home
       if @@HOME.nil?
@@ -42,10 +43,13 @@ class EnveCollection
       "https://github.com/lmrodriguezr/enveomics/archive/master.zip"
    end
    
-   attr_accessor :hash
+   #= Instance-level
+   attr_accessor :hash, :manif
    def initialize(manif=nil)
       manif ||= EnveCollection.manif
-      @hash = JSON.parse(File.read(manif), {symbolize_names: true})
+      @manif = manif
+      @hash = EnveJSON.parse(manif)
+      
       @hash[:categories] ||= {}
       unless @hash[:tasks].nil?
 	 @tasks = Hash[@hash[:tasks].map do |h|
