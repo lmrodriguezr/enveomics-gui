@@ -77,7 +77,7 @@ lib/appbundler-1.0.jar: lib
 
 lib/template.dmg: lib
 	mkdir template
-	hdiutil create -fs HFSX -layout SPUD -size 150m $@ -srcfolder template \
+	hdiutil create -fs HFSX -layout SPUD -size 200m $@ -srcfolder template \
 	   -format UDRW -volname enveomics -quiet
 	rmdir template
 
