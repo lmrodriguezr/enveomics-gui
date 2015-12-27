@@ -36,6 +36,14 @@ class EnveJSON
       o
    end
 
+   def [](k)
+      hash[k]
+   end
+
+   def []=(k,v)
+      hash[k]=v
+   end
+
    def to_h
       deparse_hash(hash)
    end

@@ -101,7 +101,7 @@ class EnveJob
 		     values[i].map{ |v| v.to_s[0] }
 		  else
 		     pipe.append o.opt unless o.opt.nil?
-		     values[i]
+		     values[i].map{ |v| v.shellescape }
 	       end
 	       pipe.append(vals.join(o.multiple_sep), false)
 	    end
