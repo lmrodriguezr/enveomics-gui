@@ -22,6 +22,7 @@ Features
 * Detached execution, so you can run multiple analyses at the same time.
 * Self-updating, so you always get the latest version of our scripts.
 * Zero configuration, just download and open.
+* Pre-packed examples, so you can see what this can do for you.
 * All the magic of [Shoes][shoes].
 
 Show me, please!
@@ -86,7 +87,6 @@ from the source. Check out [INSTALL-HARD.md](INSTALL-HARD.md) to learn how.
 Coming soon
 ===========
 * Support for `enveomics.R`.
-* Examples.
 * Search.
 
 Credits
