@@ -1,20 +1,21 @@
 
 class EnveRequires
    attr_accessor :hash, :test, :description, :source_url
-   attr_accessor :interpreter, :ruby_gem, :perl_lib
+   attr_accessor :interpreter, :ruby_gem, :perl_lib, :r_package
    def initialize(o)
       @hash = o
       @hash.each{ |k,v| instance_variable_set("@#{k}", v) }
       
       # Empty requirements are not allowed
       raise "Empty requirement." if
-	 %w(test description interpreter ruby_gem perl_lib).map do |k|
+	 %w(test description interpreter ruby_gem perl_lib r_package).map do |k|
 	    hash[k.to_sym].nil?
 	 end.all?
       
       # Presets for known requirements
       set_by_ruby_gem unless ruby_gem.nil?
       set_by_perl_lib unless perl_lib.nil?
+      set_by_r_package unless r_package.nil?
       set_by_interpreter unless interpreter.nil?
       self.description ||= test
    end
@@ -37,6 +38,13 @@ class EnveRequires
 	 self.description ||= "Perl library #{perl_lib}"
 	 self.source_url ||= "http://search.cpan.org/search?query=#{perl_lib}"
       end
+
+      def set_by_r_package
+	 self.test ||= "#{EnveTask.RSCRIPT} -e 'library(#{r_package})'"
+	 self.description ||= "R package #{r_package}"
+	 self.source_url ||= "https://cran.r-project.org/package=#{r_package}"
+      end
+
       def set_by_interpreter
 	 case interpreter.to_s
 	    when "ruby"
