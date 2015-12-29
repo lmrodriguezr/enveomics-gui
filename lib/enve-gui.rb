@@ -411,6 +411,7 @@ class EnveGUI < Shoes
 
       def show_task_option_select(opt, opt_i)
 	 $opt_elem[opt_i] << list_box(items: opt.values)
+	 $opt_elem[opt_i].last.choose(opt.default) unless opt.default.nil?
       end
 
       def show_task_option_edit(opt, opt_i)
