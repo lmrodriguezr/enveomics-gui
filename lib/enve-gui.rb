@@ -531,7 +531,9 @@ class EnveGUI < Shoes
 	 o = File.expand_path(img, $img_path)
 	 return o if __FILE__ !~ /\.jar!\//
 	 # Juggling around packages:
-	 h = File.expand_path(img, EnveCollection.home)
+	 idir = File.expand_path("img", EnveCollection.home)
+	 Dir.mkdir(idir) unless Dir.exist? idir
+	 h = File.expand_path(img, idir)
 	 FileUtils.copy(o, h) unless File.exist? h
 	 h
       end
