@@ -90,18 +90,14 @@ class EnveGUI < Shoes
    # Examples
    def examples
       header "/examples"
+      para ""
       stack(margin:[40,0,40,0]) do
 	 $collection.examples.each_index do |i|
-	    para ""
 	    box(click:"/example/#{i}") do
-	       para ""
 	       e = $collection.examples[i]
-	       subtitle e.description, margin_left:20, margin_right:20
-	       para "Using ", e.task.task, ".",
-		  size:15, margin_right:20, align:"right"
-	       para ""
+	       para e.description, margin_left:10, margin_right:10, size:15
+	       para "Using ", e.task.task, ".", margin_right:10, align:"right"
 	    end
-	    para ""
 	 end unless $collection.examples.nil?
       end
       footer
@@ -136,8 +132,14 @@ class EnveGUI < Shoes
 	 $opt_stack = []
 	 #= Header
 	 unless example.nil?
-	    para strong("Test example:")
-	    para $example.description, left_margin:20, right_margin:20
+	    box do
+	       para strong("Test example:")
+	       para $example.description, left_margin:20, right_margin:20
+	       para "Parameters highlighted in blue have been changed from ",
+	         "the defaults (", link("reload defaults"){
+		    visit "/script/#{$example.task.task}" },").",
+		 left_margin:20, right_margin:20
+	    end
 	    para ""
 	 end
 	 title $t.task
@@ -362,7 +364,7 @@ class EnveGUI < Shoes
 	       $opt_stack[i].toggle unless o.mandatory?
 	    end
 	    @button_show_hide.text = (@button_show_hide.text =~ /^Hide/ ?
-	       "Hide optional parameters" : "Show optional parameters")
+	       "Show optional parameters" : "Hide optional parameters")
 	 end
 	 para "", margin:10
 	 #= Each option
@@ -370,7 +372,7 @@ class EnveGUI < Shoes
 	 task.each_option do |opt_i, opt|
 	    next if opt.hidden?
 	    $opt_elem[opt_i] = []
-	    $opt_stack[opt_i] = stack(margin:[10,0,10,0]) do
+	    $opt_stack[opt_i] = stack(margin:10) do
 	       subtitle opt.name
 	       para opt.description if opt.description and opt.arg!=:nil
 	       @opt_plus_button[opt_i] = stack do
@@ -383,7 +385,6 @@ class EnveGUI < Shoes
 	       end unless opt.multiple_sep.nil?
 	       inscription opt.note if opt.note
 	       opt.source_urls.each{ |url| para link(url){ open_url(url) } }
-	       para "", margin:10
 	    end # stack (option)
 	 end # each_option
 	 para strong("* Required"), margin:[10,0,10,0]
@@ -521,6 +522,10 @@ class EnveGUI < Shoes
 		     $opt_elem[opt_i][opt_j].choose(v)
 		  when :string, :integer, :float
 		     $opt_elem[opt_i][opt_j].text = v
+	       end
+	       # Visually document the change
+	       $opt_stack[opt_i].prepend do
+		  background enve_blue(0.2)
 	       end
 	    end # values.each
 	 end # each_option
