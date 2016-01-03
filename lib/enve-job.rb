@@ -48,7 +48,7 @@ class EnveJob
       pipe.to_s
    end
    def log
-      File.read(log_path)
+      File.read(log_path).gsub(/^.*\r/,"")
    end
    def log_path
       @logfile.path
