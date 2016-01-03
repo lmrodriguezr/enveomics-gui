@@ -22,7 +22,7 @@ class EnveRequires
    
    def pass?
       return true if test.nil?
-      !!system(test)
+      EnveCollection.sysrun(test)
    end
 
    private

@@ -27,7 +27,8 @@ class EnveJob
       @script = Tempfile.new("enveomics")
       @script.puts cmd
       @script.close
-      script_call = "#{EnveTask.BASH.shellescape} #{@script.path.shellescape}"
+      script_call = "#{EnveCollection.syspre} && " +
+	 "#{EnveTask.BASH.shellescape} #{@script.path.shellescape}"
       @wait_thr = Open3.pipeline_start(script_call).last
       # And some other options to explore in the future:
       # @wait_thr = spawn(*pipe.to_spawn)
