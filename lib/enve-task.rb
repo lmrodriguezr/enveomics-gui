@@ -35,6 +35,20 @@ class EnveTask
       end
       hash[:description]
    end
+   def usage
+      u = task
+      each_option do |o|
+         if o.as_is?
+	    u += " #{o.opt}"
+	 elsif o.mandatory?
+	    u += " #{o.opt}" unless o.opt.nil?
+	    u += " *#{o.arg}*" unless o.arg==:nil
+	 elsif u !~ / \[opts\]$/
+	    u += " [opts]"
+	 end
+      end
+      u
+   end
    def help_arg
       hash[:help_arg]
    end
