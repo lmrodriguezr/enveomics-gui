@@ -50,7 +50,7 @@ class EnveCollection
       # Load ~/.bashrc for bundled Mac OS X apps [See #22]:
       (["(exit 0)"] + %w(.profile .bashrc .bash_profile).map do |f|
          p = File.expand_path(".profile", ENV["HOME"])
-	 File.exists?(p) ? "source #{p.shellescape}" : nil
+	 File.exists?(p) ? ". #{p.shellescape}" : nil
       end).compact.join(" && ")
    end
    
