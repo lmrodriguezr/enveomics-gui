@@ -70,7 +70,8 @@ Linux or BSD
 
 Mac OS X
 --------
-1. Download and open [enveomics.dmg][dmg].
+1. Download and open [enveomics.dmg][dmg] (or [enveomics-java6.dmg][dmg6] in
+   Leopard/Snow Leopard).
 2. Drag `enveomics.app` to the `Applications` folder.
 
 Windows
@@ -82,11 +83,10 @@ happens, please [let us know][issues].
 From the source
 ---------------
 If you want to play with the code of Enveomics GUI, you can open it directly
-from the source. Check out [INSTALL-HARD.md](INSTALL-HARD.md) to learn how.
+from the source. Check out [INSTALL-HARD.md](docs/INSTALL-HARD.md) to learn how.
 
 Coming soon
 ===========
-* Support for `enveomics.R`.
 * Search.
 
 Credits
@@ -105,6 +105,7 @@ of [The Artistic License 2.0](LICENSE), except when otherwise noted.
 [issues]: https://github.com/lmrodriguezr/enveomics-gui/issues
 [jar]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.jar
 [dmg]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics.dmg
+[dmg6]: http://enve-omics.ce.gatech.edu/data/public_enveomics/enveomics-java6.dmg
 [lrr]: http://lmrodriguezr.github.io/
 [enve]: https://github.com/lmrodriguezr/enveomics  "Enveomics collection"
 [anirb]: http://enveomics.blogspot.com/2013/10/anirb.html

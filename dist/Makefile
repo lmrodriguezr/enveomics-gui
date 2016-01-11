@@ -50,14 +50,14 @@ enveomics.app: enveomics.jar lib/appbundler-1.0.jar
 	ant enveomics
 	patch enveomics.app/Contents/Info.plist info-plist.patch
 
-enveomics.dmg: enveomics.app lib/template.dmg lib/README.pdf lib/LICENSE.pdf
+%.dmg: %.app lib/template.dmg lib/README.pdf lib/LICENSE.pdf
 	hdiutil attach lib/template.dmg -noautoopen -quiet -mountpoint wc
 	rm -rf wc/*
 	rm -rf wc/.background
 	ditto -rsrc lib/LICENSE.pdf wc/LICENSE.pdf
 	ditto -rsrc lib/README.pdf wc/README.pdf
-	ditto -rsrc enveomics.app wc/enveomics.app
 	ditto -rsrc ../img/bg1-dmg.png wc/.background/bg1-dmg.png
+	ditto -rsrc "$<" wc/enveomics.app
 	osascript dmg.applescript
 	WC_D=`hdiutil info | grep wc | grep Apple_HFS | awk '{print $$1}'` && \
 	   hdiutil detach $$WC_D -quiet -force

@@ -15,7 +15,11 @@ class EnveCollection
 	       ENV["HOME"] = "~"
 	    end
 	 end
-	 @@HOME = File.expand_path(".enveomics", ENV["HOME"])
+	 if RbConfig::CONFIG['host_os'] =~ /darwin/
+	    @@HOME = File.expand_path("Library/enveomics", ENV["HOME"])
+	 else
+	    @@HOME = File.expand_path(".enveomics", ENV["HOME"])
+	 end
 	 Dir.mkdir(@@HOME) unless Dir.exist? @@HOME
       end
       @@HOME
