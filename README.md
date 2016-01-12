@@ -19,10 +19,11 @@ Features
 * Executes scripts easily, no programming experience necessary.
 * Reports the exact command executed so you can easily log, reproduce, automate,
   and report analyses.
+* With use examples, categories, and quick search, you don't need endless
+  manuals to find the right analysis.
 * Detached execution, so you can run multiple analyses at the same time.
 * Self-updating, so you always get the latest version of our scripts.
 * Zero configuration, just download and open.
-* Pre-packed examples, so you can see what this can do for you.
 * All the magic of [Shoes][shoes].
 
 Show me, please!
@@ -31,9 +32,9 @@ My pleasure. Here's the home window:
 
 ![home](docs/img/Home.png)
 
-Here, the complete index of tasks:
+Here are some use examples:
 
-![all tasks](docs/img/AllTasks.png)
+![all tasks](docs/img/Examples.png)
 
 This is us preparing to calculate the Average Amino acid Identity (AAI) between
 two genomes:
@@ -84,10 +85,6 @@ From the source
 ---------------
 If you want to play with the code of Enveomics GUI, you can open it directly
 from the source. Check out [INSTALL-HARD.md](docs/INSTALL-HARD.md) to learn how.
-
-Coming soon
-===========
-* Search.
 
 Credits
 =======
