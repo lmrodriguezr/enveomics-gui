@@ -40,5 +40,6 @@ build/
 
 # Dist
 /dist/enveomics.*
+/dist/enveomics-java6.*
 /dist/lib/*
 /dist/bin/*

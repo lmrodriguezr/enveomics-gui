@@ -1,6 +1,7 @@
 require "enve-task"
 require "enve-json"
 require "enve-example"
+require "enve-search-index"
 
 class EnveCollection
    #= Class-level
@@ -59,7 +60,7 @@ class EnveCollection
    end
    
    #= Instance-level
-   attr_accessor :hash, :manif, :examples
+   attr_accessor :hash, :manif, :examples, :search_index
    def initialize(manif=nil)
       manif ||= EnveCollection.manif
       @manif = manif
@@ -77,6 +78,10 @@ class EnveCollection
       end
       raise "Impossible to initialize collection with empty manifest: " +
 	 "#{manif}." if @tasks.nil?
+      @search_index = EnveSearchIndex.new(self)
+   end
+   def search(text)
+      search_index.search(text)
    end
    def tasks
       @tasks.values

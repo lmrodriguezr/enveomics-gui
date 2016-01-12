@@ -290,20 +290,59 @@ class EnveGUI < Shoes
 	    stack(width:0.04){}
 	    # Highlights
 	    stack(width:0.73) do
-	       subtitle "The most popular"
-	       inscription ""
-	       %w(ani.rb aai.rb FastQ.split.pl Taxonomy.silva2ncbi.rb
-			AlphaDiversity.pl).each do |t|
-		  show_task_link($collection.task(t))
-	       end
-	       para ""
-	       subtitle "Some random suggestions"
-	       inscription ""
-	       $collection.tasks.sample(5).each do |t|
-		  show_task_link(t)
+	       show_search_bar
+	       $default_home = stack(width:1.0) do
+		  subtitle "The most popular"
+		  inscription ""
+		  %w(ani.rb aai.rb FastQ.split.pl Taxonomy.silva2ncbi.rb
+			   AlphaDiversity.pl).each do |t|
+		     show_task_link($collection.task(t))
+		  end
+		  para ""
+		  subtitle "Some random suggestions"
+		  inscription ""
+		  $collection.tasks.sample(5).each do |t|
+		     show_task_link(t)
+		  end
 	       end
 	    end
 	 end # flow (the whole ordeal)
+      end # show_home
+
+      def show_search_bar
+	 flow(width:1.0) do
+	    stack(width:29, height:29) do
+	       background enve_blue
+	       image img_path("w-noun_208368_cc.png"),
+		  width:25, height:25, left:2, top:2
+	    end
+	    $last_search = ""
+	    edit_box("", width:-29, height:29).change do |ln|
+	       ln.text = ln.text.gsub(/[\n\r]/,"") if ln.text=~/[\n\r]/
+	       timer(1) do
+		  if $last_search == ln.text
+		     # Do nothing
+		  elsif ln.text.length < 2
+		     $default_home.show
+		     $search_results.clear
+		  else
+		     $default_home.hide
+		     $search_results.clear
+		     $search_results.append do
+			$collection.search(ln.text).each do |k, res|
+			   box(click: res.id) do
+			      para strong res.name
+			      para res.description
+			   end
+			end
+		     end
+		  end
+		  $last_search = ln.text
+	       end
+	    end
+	 end
+	 para ""
+	 $search_results = stack {}
       end
       
       def subcat(subcatpath)
