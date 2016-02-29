@@ -21,6 +21,7 @@ class EnveGUI < Shoes
    url "/subcat/(.*/.*)", :subcat
    url "/script/(.+)", :script
    url "/example/(\\d+)", :example
+   $current_loc = "/"
    $img_path   = File.expand_path("../../img", __FILE__)
    $enve_jobs  = {}
    $citation   = [
@@ -41,6 +42,7 @@ class EnveGUI < Shoes
    # =====================[ View : Windows ]
    # Main window
    def home
+      $current_loc = "/"
       header "/"
       stack(margin:[40,0,40,0]) do
 	 title "Welcome to the Enveomics collection!", align:"center"
@@ -68,6 +70,7 @@ class EnveGUI < Shoes
    
    # Index of all tasks
    def index
+      $current_loc = "/index"
       header "/index"
       stack(margin:[40,0,40,0]) do
 	 stack do
@@ -89,6 +92,7 @@ class EnveGUI < Shoes
 
    # Examples
    def examples
+      $current_loc = "/examples"
       header "/examples"
       para ""
       stack(margin:[40,0,40,0]) do
@@ -105,6 +109,7 @@ class EnveGUI < Shoes
 
    # About enveomics
    def about
+      $current_loc = "/about"
       header "/about"
       stack(margin:[40,0,40,0]) do
 	 subtitle "Citation"
@@ -118,6 +123,7 @@ class EnveGUI < Shoes
 
    # Update enveomics
    def update
+      $current_loc = "/update"
       FileUtils.rm_rf(File.dirname($manif_path))
       $manif_path = nil
       $collection = nil
@@ -126,6 +132,7 @@ class EnveGUI < Shoes
 
    # Script query
    def script(task, example=nil)
+      $current_loc = "/script/#{task}" if example.nil?
       header
       stack(margin:[40,0,40,0]) do
 	 $t = $collection.task(task)
@@ -159,6 +166,7 @@ class EnveGUI < Shoes
 
    # Load an example
    def example(index)
+      $current_loc = "/example/#{index}"
       $example = $collection.examples[index.to_i]
       script($example.task.task, $example)
       fill_task_values($example.values)
@@ -380,7 +388,14 @@ class EnveGUI < Shoes
 		     " requirements:"), margin_bottom:2
 		  task.unmet.each do |r|
 		     p = [r.description]
-		     p += [" (",link("get"){ open_url r.source_url},")"] if
+		     p += [" ("] unless r.solution.nil? and r.source_url.nil?
+		     p += [link("auto-install"){
+			   Shoes.alert("attempting installation...")
+			   r.resolve or alert("Installation failed.")
+			   visit $current_loc
+			}] if not r.solution.nil?
+		     p += [" or "] unless r.solution.nil? or r.source_url.nil?
+		     p += [link("get"){ open_url r.source_url},")"] if
 			not r.source_url.nil?
 		     p << "."
 		     para *p, margin:[10,0,10,0]

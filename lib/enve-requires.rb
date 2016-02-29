@@ -1,6 +1,6 @@
 
 class EnveRequires
-   attr_accessor :hash, :test, :description, :source_url
+   attr_accessor :hash, :test, :description, :source_url, :solution
    attr_accessor :interpreter, :ruby_gem, :perl_lib, :r_package
    def initialize(o)
       @hash = o
@@ -25,12 +25,18 @@ class EnveRequires
       EnveCollection.sysrun(test)
    end
 
+   def resolve
+      return false if solution.nil?
+      EnveCollection.sysrun(solution)
+   end
+
    private
       
       def set_by_ruby_gem
          self.test ||= "#{EnveTask.RUBY} -r #{ruby_gem.shellescape} -e ''"
 	 self.description ||= "Ruby gem #{ruby_gem}"
 	 self.source_url ||= "https://rubygems.org/gems/#{ruby_gem}"
+	 self.solution ||= "gem install --user-install #{ruby_gem}"
       end
 
       def set_by_perl_lib
@@ -43,6 +49,8 @@ class EnveRequires
 	 self.test ||= "#{EnveTask.RSCRIPT} -e 'library(#{r_package})'"
 	 self.description ||= "R package #{r_package}"
 	 self.source_url ||= "https://cran.r-project.org/package=#{r_package}"
+	 self.solution ||= "echo 'install.packages(\"#{r_package}\", " +
+	    "repos=\"http://cran.r-project.org\")' | R --vanilla"
       end
 
       def set_by_interpreter
