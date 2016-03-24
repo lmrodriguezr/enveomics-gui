@@ -31,7 +31,7 @@ end
 
 # Evaluate individual scripts
 known_t_fields = [:task, :description, :help_arg, :options, :requires, :warn,
-   :see_also]
+   :see_also, :cite]
 known_o_fields = [:name, :description, :note, :opt, :arg, :mandatory, :values,
    :hidden, :as_is, :default, :multiple_sep, :source_url]
 empty_tasks = []
@@ -64,6 +64,10 @@ c.tasks.each do |task|
    task.see_also.each do |s|
       issues << "See-also linking to unexisting task: #{s}." if
 	 c.task(s).nil?
+   end
+   task.cite.each do |c|
+      issues << "Citation is not an array with two entries: #{c}." unless
+	 c.is_a?(Array) and c.size==2
    end
    task.options.each do |opt|
       extra_f = opt.hash.keys - known_o_fields
