@@ -101,6 +101,10 @@ class EnveTask
       @hash[:see_also] = [hash[:see_also]] unless hash[:see_also].is_a? Array
       hash[:see_also]
    end
+   def cite
+      @hash[:cite] ||= []
+      hash[:cite]
+   end
    def launch_job(values)
       EnveJob.new(self, values)
    end

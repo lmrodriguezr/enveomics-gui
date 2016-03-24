@@ -152,6 +152,7 @@ class EnveGUI < Shoes
 	 title $t.task
 	 para $t.description, margin_left:7
 	 show_task_warns $t
+	 show_task_cites $t
 	 para "See also: ", *$t.see_also.map{ |s|
 	       [link(s){visit "/script/#{s}" }, " "] }.flatten,
 	       margin_left:7 unless $t.see_also.empty?
@@ -380,7 +381,7 @@ class EnveGUI < Shoes
       end
 
       def show_task_warns(task)
-	 return if task.warn.empty? if task.ready?
+         return if task.warn.empty? and task.ready?
 	 stack(margin:10) do
 	    box(background:enve_red(0.3), side_line:enve_red) do
 	       if not task.ready?
@@ -408,6 +409,19 @@ class EnveGUI < Shoes
 	       end
 	    end
 	 end
+      end
+
+      def show_task_cites(task)
+         return if task.cite.empty?
+         stack(margin:10) do
+            box(background:enve_blue(0.3), side_line:enve_blue) do
+               p = ["If you use this script, also cite"]
+               task.cite.each do |ref|
+                  p += [" (", link(ref[0]){ open_url ref[1] }, ")"]
+               end
+               para *p, ".", margin:[10,0,10,0]
+            end
+         end
       end
 
       def show_task_options(task)
